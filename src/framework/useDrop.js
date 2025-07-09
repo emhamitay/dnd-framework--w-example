@@ -4,67 +4,64 @@ import { useDndStore } from "./dndStore";
 
 /**
  * Custom React hook that turns a component into a drop zone for drag-and-drop interactions.
+ *
  * @param {Object} options - Configuration options for the drop zone.
  * @param {string} options.id - Unique identifier for this drop zone.
- * @param {(activeData: any) => void} options.onDrop - Callback triggered when an item is dropped on this zone.
- * @returns {{ dropRef: React.Ref, isOver: boolean }} - Ref to attach to the drop zone element and a flag indicating if an item is currently hovering over it.
+ * @param {(activeItem: { id: string, type: string, data: any }) => void} options.onDrop - Callback triggered when an item is dropped on this zone.
+ * @returns {{ dropRef: React.RefObject, isOver: boolean }} - Ref to attach to the drop zone element and a flag indicating if an item is currently hovering over it.
  */
 export function useDrop({ id, onDrop }) {
-  const ref = useRef(null); // Ref to the DOM element acting as the drop zone
+  const ref = useRef(null);
 
-  // Access drag-and-drop state and actions from the shared store
-  const { activeId, activeData, hoverId, updateHover, endDrag } = useDndStore();
+  // Access drag-and-drop state and actions
+  const { activeItem, hoverId, updateHover, endDrag } = useDndStore();
 
-  const isOver = hoverId === id; // True if this drop zone is currently being hovered
+  const isOver = hoverId === id;
 
   // Called when the pointer enters the drop zone
   const handlePointerEnter = useCallback(() => {
-    if (activeId) {
-      updateHover(id); // Mark this drop zone as currently hovered
+    if (activeItem?.id) {
+      updateHover(id);
     }
-  }, [activeId, id, updateHover]);
+  }, [activeItem, id, updateHover]);
 
   // Called when the pointer leaves the drop zone
   const handlePointerLeave = useCallback(() => {
-    updateHover(null); // Clear hover state
+    updateHover(null);
   }, [updateHover]);
 
-  // Called when the pointer is released (drop attempt)
+  // Called when the pointer is released (drop)
   const handleDrop = useCallback((event) => {
-    if (ref.current && ref.current.contains(event.target) && activeId) {
-      onDrop?.(activeData); // Trigger drop callback with dragged data
-      endDrag(); // Finalize drag state
-    } else if (activeId) {
-      endDrag(); // Cancel drag if dropped outside
+    if (ref.current && ref.current.contains(event.target) && activeItem?.id) {
+      onDrop?.(activeItem);
+      endDrag();
+    } else if (activeItem?.id) {
+      endDrag();
     }
-  }, [activeId, activeData, onDrop, endDrag]);
+  }, [activeItem, onDrop, endDrag]);
 
-  // Register and clean up event listeners
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    // Attach pointer event listeners to the drop zone element
     el.addEventListener("pointerenter", handlePointerEnter);
     el.addEventListener("pointerleave", handlePointerLeave);
     el.addEventListener("pointerup", handleDrop);
 
-    // Global listener to handle pointer release outside any drop zone
     const handleWindowPointerUp = (event) => {
-      if (activeId && (!ref.current || !ref.current.contains(event.target))) {
+      if (activeItem?.id && (!ref.current || !ref.current.contains(event.target))) {
         endDrag();
       }
     };
     window.addEventListener("pointerup", handleWindowPointerUp);
 
-    // Cleanup on unmount or dependency change
     return () => {
       el.removeEventListener("pointerenter", handlePointerEnter);
       el.removeEventListener("pointerleave", handlePointerLeave);
       el.removeEventListener("pointerup", handleDrop);
       window.removeEventListener("pointerup", handleWindowPointerUp);
     };
-  }, [handlePointerEnter, handlePointerLeave, handleDrop, activeId, endDrag]);
+  }, [handlePointerEnter, handlePointerLeave, handleDrop, activeItem?.id, endDrag]);
 
   return { dropRef: ref, isOver };
 }

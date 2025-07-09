@@ -1,27 +1,28 @@
-import useUserStore from './store/useUsersStore';
-import Group from './components/group';
-import { useDndStore } from './framework/dndStore';
-import { useEffect } from 'react';
-import { DndProvider } from './framework/DndProvider';
+import useUserStore from "./store/useUsersStore";
+import Group from "./components/Group";
+import { DndProvider } from "./framework/DndProvider";
+import { GhostLayer } from "./framework/GhostLayer";
 
 function App() {
-
-    const g1 = useUserStore((s) => s.g1);
-    const g2 = useUserStore((s) => s.g2);
-    const setConsoleLog = useDndStore((s) => s.setConsoleLog);
-
-    useEffect(() => {
-      setConsoleLog(true);
-    }, [setConsoleLog]);
-
-    return (
+  const groups = useUserStore((s) => s.groups);
+  const addGroup = useUserStore((s) => s.addGroup);
+  return (
     <DndProvider>
-      <div className='flex w-screen h-screen justify-center items-center gap-3' >
-        <Group users={g1} id='g1' />
-        <Group users={g2} id='g2' />
+      <GhostLayer />
+      <div className="flex flex-col w-screen h-screen items-center gap-3">
+        <div className="flex flex-row justify-center items-center m-5 w-screen h-10">
+          <button onClick={()=>{
+            addGroup();
+          }}>Add Group</button>
+        </div>
+        <div className="flex flex-row flex-1 justify-center items-center gap-3">
+          { groups.map((g) => (
+            <Group key={g.id} group={g} />
+          ))}
+        </div>
       </div>
     </DndProvider>
-  )
+  );
 }
 
-export default App
+export default App;
