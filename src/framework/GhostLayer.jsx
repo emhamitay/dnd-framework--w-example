@@ -4,44 +4,49 @@ import { useDndStore } from "./dndStore";
 
 export function GhostLayer() {
   const activeItem = useDndStore((s) => s.activeItem);
-  const [position, setPosition] = useState(() => activeItem?.pointerPosition || { x: 0, y: 0 });
+  const [position, setPosition] = useState(
+    () => activeItem?.pointerPosition || { x: 0, y: 0 }
+  );
   const [size, setSize] = useState({ width: 0, height: 0 });
+  const [ready, setReady] = useState(false);
   const containerRef = useRef(null);
 
   // Clone and insert the ghost element
   useEffect(() => {
-    if (!activeItem?.draggedElement || !containerRef.current) {
-      if (containerRef.current) {
-        containerRef.current.innerHTML = "";
+    if(activeItem == null) setReady(false);
+    if (ready) {
+      if (!activeItem?.draggedElement || !containerRef.current) {
+        if (containerRef.current) {
+          containerRef.current.innerHTML = "";
+        }
+        setSize({ width: 0, height: 0 });
+        return;
       }
-      setSize({ width: 0, height: 0 });
-      return;
+
+      const clone = activeItem.draggedElement.cloneNode(true);
+
+      // Ghost styles
+      clone.style.pointerEvents = "none";
+      clone.style.opacity = "0.9";
+      clone.style.boxShadow = "0 10px 20px rgba(0,0,0,0.3)";
+      clone.style.borderRadius = "8px";
+      clone.style.margin = "0";
+      clone.style.userSelect = "none";
+
+      containerRef.current.innerHTML = "";
+      containerRef.current.appendChild(clone);
+
+      // After clone is added, measure its size
+      const rect = clone.getBoundingClientRect();
+      setSize({ width: rect.width, height: rect.height });
     }
-
-    const clone = activeItem.draggedElement.cloneNode(true);
-
-    // Ghost styles
-    clone.style.pointerEvents = "none";
-    clone.style.opacity = "0.9";
-    clone.style.boxShadow = "0 10px 20px rgba(0,0,0,0.3)";
-    clone.style.borderRadius = "8px";
-    clone.style.margin = "0";
-    clone.style.userSelect = "none";
-
-    containerRef.current.innerHTML = "";
-    containerRef.current.appendChild(clone);
-
-    // After clone is added, measure its size
-    const rect = clone.getBoundingClientRect();
-    setSize({ width: rect.width, height: rect.height });
-
     return () => {
       if (containerRef.current) {
         containerRef.current.innerHTML = "";
       }
       setSize({ width: 0, height: 0 });
     };
-  }, [activeItem]);
+  }, [activeItem, ready]);
 
   // Track pointer position
   useEffect(() => {
@@ -55,6 +60,7 @@ export function GhostLayer() {
     function onPointerMove(e) {
       setPosition({ x: e.clientX, y: e.clientY });
     }
+    setReady(true);
 
     window.addEventListener("pointermove", onPointerMove);
     return () => window.removeEventListener("pointermove", onPointerMove);
