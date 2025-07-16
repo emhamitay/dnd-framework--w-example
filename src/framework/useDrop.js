@@ -1,6 +1,6 @@
 // useDrop.js
 import { useEffect, useRef, useCallback } from "react";
-import { useDndStore } from "./dndStore";
+import { useDndStore } from "./utils/dndStore";
 
 /**
  * Custom React hook that turns a component into a drop zone for drag-and-drop interactions.

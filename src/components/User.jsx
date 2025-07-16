@@ -1,5 +1,6 @@
 // components/User.jsx
 import { useDrag } from "../framework/useDrag";
+import { useSortable } from "../framework/useSortable";
 
 /**
  * A draggable User component.
@@ -8,22 +9,17 @@ import { useDrag } from "../framework/useDrag";
  * @param {Object} props
  * @param {Object} props.user - The user object with id, name, groupId, etc.
  */
-export default function User({ user }) {
-  const { onMouseDown } = useDrag({
-    id: user.id,
-    type: "user", // Type used to differentiate draggable item types
-    data: {
-      name: user.name,
-      groupId: user.groupId,
-    },
-  });
+export default function User({ sortId , user }) {
+  const { onMouseDown } = useDrag({ id: user.id, sortId , data: { id: user.id } });
+  const { ref } = useSortable({id : user.id})
 
   return (
     <div
+      ref={ref}
       onMouseDown={onMouseDown}
       className="w-52 p-5 bg-blue-50 border border-blue-100 rounded-2xl shadow cursor-grab"
     >
-      {user.name}
+      {user.index} : {user.name}
     </div>
   );
 }

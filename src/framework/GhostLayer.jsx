@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
-import { useDndStore } from "./dndStore";
+import { useDndStore } from "./utils/dndStore";
 
 export function GhostLayer() {
   const activeItem = useDndStore((s) => s.activeItem);
@@ -13,7 +13,9 @@ export function GhostLayer() {
 
   // Clone and insert the ghost element
   useEffect(() => {
-    if(activeItem == null) setReady(false);
+
+    if(activeItem == null) setReady(false); //active item is null if the last item was dropped - do not run this if not ready
+
     if (ready) {
       if (!activeItem?.draggedElement || !containerRef.current) {
         if (containerRef.current) {
@@ -60,6 +62,8 @@ export function GhostLayer() {
     function onPointerMove(e) {
       setPosition({ x: e.clientX, y: e.clientY });
     }
+
+    //updated position - ready to render ghost clone
     setReady(true);
 
     window.addEventListener("pointermove", onPointerMove);

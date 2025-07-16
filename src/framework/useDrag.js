@@ -1,10 +1,11 @@
-// useDrag.js
 import { useCallback } from "react";
-import { useDndStore } from "./dndStore";
+import { useDndStore } from "./utils/dndStore";
+import mouseUpEventStore from "./utils/mouseUpEventStore";
 
 /**
  * Hook to make an element draggable.
  * Starts drag on mouse down, stores the dragged DOM element for ghost rendering,
+ * tracks pointer position during dragging,
  * and ends drag on mouse up.
  *
  * @param {Object} options
@@ -13,33 +14,41 @@ import { useDndStore } from "./dndStore";
  * @param {any} [options.data] - Optional metadata (e.g. group, index)
  * @returns {{ onMouseDown: (e: MouseEvent) => void }}
  */
-export function useDrag({ id, type = "default", data }) {
-  // Access startDrag and endDrag actions from Zustand store
+export function useDrag({ id, sortId,  type = "default", data }) {
   const startDrag = useDndStore((s) => s.startDrag);
   const endDrag = useDndStore((s) => s.endDrag);
 
-  /**
-   * Handle mouse down event to start dragging
-   * @param {MouseEvent} event - the mouse down event
-   */
   const onMouseDown = useCallback(
     (event) => {
-      // Pass id, combined data (with type), the actual DOM element, and pointer position
-      startDrag(
-        id,
-        { type, data },
-        event.currentTarget,
-        { x: event.clientX, y: event.clientY }
-      );
+      startDrag(id, { type, data:{
+        ...data,
+        sortId,
+      } }, event.currentTarget, {
+        x: event.clientX,
+        y: event.clientY,
+      });
 
-      // Handler to end dragging when mouse button is released
-      const handleMouseUp = () => {
-        endDrag();
-        window.removeEventListener("mouseup", handleMouseUp);
+      const handleMouseMove = (e) => {
+        useDndStore.setState((s) => ({
+          activeItem: {
+            ...s.activeItem,
+            pointerPosition: { x: e.clientX, y: e.clientY },
+          },
+        }));
       };
 
-      // Listen for mouseup globally to detect drag end
+      const handleMouseUp = () => {
+        mouseUpEventStore.runEvents(sortId);
+        mouseUpEventStore.removeEvents(sortId);
+
+        endDrag();
+
+        window.removeEventListener("mouseup", handleMouseUp);
+        window.removeEventListener("mousemove", handleMouseMove);
+      };
+
       window.addEventListener("mouseup", handleMouseUp);
+      window.addEventListener("mousemove", handleMouseMove);
     },
     [id, type, data, startDrag, endDrag]
   );

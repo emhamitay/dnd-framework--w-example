@@ -13,8 +13,28 @@ const useUserStore = create((set, get) => ({
    */
   addGroup: () => {
     const groups = get().groups;
-    const newGroup = new Group();
+    const newGroup = new Group(groups.length);
     set({ groups: [...groups, newGroup] });
+  },
+
+  /**
+   * Update the chosen group into the new group
+   * @param {Number} groupId the id of the group to be updated
+   * @param {User[]} newUsers new array of the updated users
+   */
+  updateGroupUsers: (groupId, newUsers) => {
+    const groups = get().groups;
+    const groupIndex = groups.findIndex((g) => g.id === groupId);
+
+    if (groupIndex !== -1) {
+      // Update indexes based on newUsers position
+      newUsers.forEach((user, i) => (user.index = i));
+      groups[groupIndex].users = newUsers;
+
+      set({ groups: [...groups] }); // trigger re-render
+    } else {
+      console.warn(`updateGroupUsers: Group not found for ID ${groupId}`);
+    }
   },
 
   /**
@@ -30,7 +50,6 @@ const useUserStore = create((set, get) => ({
     let fromGroupIndex = -1;
     let userIndex = -1;
 
-    // Locate the user and their current group
     for (let i = 0; i < groups.length; i++) {
       const groupUsers = groups[i].users;
       const index = groupUsers.findIndex((user) => user.id === userId);
@@ -42,18 +61,18 @@ const useUserStore = create((set, get) => ({
       }
     }
 
-    // Find the target group
     const toGroup = groups.find((g) => g.id === toGroupId);
 
-    // Perform the move if valid
     if (userToMove && toGroup) {
-      // Remove from current group
       groups[fromGroupIndex].users.splice(userIndex, 1);
+      groups[fromGroupIndex].users.forEach((user, i) => (user.index = i));
 
-      // Add to target group
+      userToMove.index = toGroup.users.length;
       toGroup.users.push(userToMove);
 
-      // Update the store with the new groups array reference
+      // ✅ Call the properly scoped sorting function
+      sortAllGroups(groups);
+
       set({ groups: [...groups] });
     } else {
       console.warn(
@@ -63,13 +82,20 @@ const useUserStore = create((set, get) => ({
   },
 }));
 
+// 🔁 Utility to keep all groups sorted by user.index
+function sortAllGroups(groups) {
+  groups.forEach((group) => {
+    group.users.sort((a, b) => a.index - b.index);
+  });
+}
+
 /**
  * Initializes the store with 2 default groups.
  * @returns {Group[]} Array of groups
  */
 function Initialize() {
   const groups = [];
-  for (let i = 0; i < 2; i++) groups.push(new Group());
+  for (let i = 0; i < 2; i++) groups.push(new Group(i));
   return groups;
 }
 

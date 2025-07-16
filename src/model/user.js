@@ -1,14 +1,15 @@
 export default class User {
-    constructor(name){
+    constructor(index, name){
         this.id = crypto.randomUUID();
         name ? this.name = name : this.name = getRandomName();
+        this.index = index;
     }
 }
 
 export function Mock(){
     let users = [];
     for(let i = 0 ; i < 5 ; i ++ ){
-      users.push(new User());
+      users.push(new User(i));
     }
     return users;
 }
