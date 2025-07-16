@@ -1,12 +1,90 @@
-# React + Vite
+🚀 Getting Started
+1. Wrap your app with DndProvider
+jsx
+Copy
+Edit
+import { DndProvider } from "./framework/DndProvider";
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+function App() {
+  return (
+    <DndProvider>
+      <YourApp />
+    </DndProvider>
+  );
+}
+2. Make Items Draggable
+jsx
+Copy
+Edit
+import { useDrag } from "./framework/useDrag";
 
-Currently, two official plugins are available:
+function DraggableItem({ id }) {
+  const { onMouseDown } = useDrag({ id });
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+  return (
+    <div onMouseDown={onMouseDown}>
+      Drag me
+    </div>
+  );
+}
+3. Enable Drop Zones
+jsx
+Copy
+Edit
+import { useDrop } from "./framework/useDrop";
 
-## Expanding the ESLint configuration
+function DropZone({ id, onDrop }) {
+  const { dropRef, isOver } = useDrop({ id, onDrop });
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+  return (
+    <div ref={dropRef} className={isOver ? "highlight" : ""}>
+      Drop items here
+    </div>
+  );
+}
+4. Enable Sorting
+a. Per item (useSortable)
+jsx
+Copy
+Edit
+import { useSortable } from "./framework/useSortable";
+
+function SortableItem({ id }) {
+  const { ref } = useSortable({ id });
+  return <div ref={ref}>Sortable {id}</div>;
+}
+b. Per list (useSortableDrop)
+jsx
+Copy
+Edit
+import { useSortableDrop } from "./framework/useSortableDrop";
+
+function SortableList({ items, onSorted }) {
+  const sortId = useSortableDrop({
+    items,
+    onSorted,
+  });
+
+  return (
+    <div>
+      {items.map(item => (
+        <SortableItem key={item.id} id={item.id} sortId={sortId} />
+      ))}
+    </div>
+  );
+}
+🧠 Features
+✅ Custom drag logic with Zustand state
+
+✅ Ghost layer rendered via portal
+
+✅ Fine-grained onDrop and onSorted handlers
+
+✅ Vertical / Horizontal / Grid sorting support
+
+✅ Multiple sortable zones (via unique sortId)
+
+✅ Clean separation of logic and UI
+
+✅ No external DnD dependencies
+
