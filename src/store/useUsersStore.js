@@ -36,7 +36,11 @@ const useUserStore = create((set, get) => ({
       console.warn(`updateGroupUsers: Group not found for ID ${groupId}`);
     }
   },
-
+  updateGroups: (newGroups) =>{
+    set({
+      groups: newGroups
+    });
+  },
   /**
    * Moves a user from their current group to a specified target group.
    *

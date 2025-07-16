@@ -2,7 +2,6 @@ import UserView from "./User";
 import { useDrop } from "../framework/useDrop";
 import useUserStore from "../store/useUsersStore";
 import { useSortableDrop } from "../framework/useSortableDrop";
-
 /**
  * Renders a group container that acts as a drop zone for users.
  * When a user is dropped into this group, moveUser is triggered.
@@ -24,7 +23,7 @@ export default function Group({ group }) {
     },
   });
 
-  const sortId = useSortableDrop({
+  const dropId = useSortableDrop({
     items: group.users,
     onSorted: (newUsers) => {
       updateGroupUsers(group.id, newUsers);
@@ -34,12 +33,12 @@ export default function Group({ group }) {
   return (
     <div
       ref={dropRef}
-      className={`flex flex-col p-5 gap-10 border-blue-100 rounded-2xl shadow 
+      className={`flex flex-row p-5 gap-10 border-blue-100 rounded-2xl shadow 
         ${isOver ? "border-4" : "border"}`}
     >
       <h3 className="mb-0">group {group.index}: </h3>
       {users.map((u) => (
-        <UserView sortId={sortId} user={u} key={u.id} />
+        <UserView sortId={dropId} user={u} key={u.id} />
       ))}
     </div>
   );

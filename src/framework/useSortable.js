@@ -2,10 +2,30 @@ import { useEffect, useRef, useState } from "react";
 import { useDndStore } from "./utils/dndStore";
 
 /**
- * Hook to make an element sortable-aware.
- * Measures its position during drag and reports if the pointer is over it.
+ * Enum for sortable directions.
+ * @readonly
+ * @enum {string}
  */
-export function useSortable({ id }) {
+export const SORT_DIRECTION = {
+  Vertical: "vertical",
+  Horizontal: "horizontal",
+};
+
+/**
+ * React hook to make an element sortable-aware.
+ * It tracks whether the pointer is hovering over the element and 
+ * determines its relative position during drag (before/after).
+ *
+ * @param {Object} options - Options for the sortable hook
+ * @param {string} options.id - Unique identifier for the item
+ * @param {string} [options.direction='vertical'] - Sorting direction: "vertical" or "horizontal"
+ * @returns {{
+ *   ref: React.RefObject<HTMLElement>,
+ *   isOver: boolean,
+ *   isActive: boolean
+ * }}
+ */
+export function useSortable({ id, direction = SORT_DIRECTION.Vertical }) {
   const ref = useRef(null);
   const requestRef = useRef(null);
   const lastPositionRef = useRef(null);
@@ -19,6 +39,9 @@ export function useSortable({ id }) {
   useEffect(() => {
     if (!activeItem || !activeItem.pointerPosition) return;
 
+    /**
+     * Continuously checks the element's position relative to the pointer.
+     */
     const checkPosition = () => {
       const el = ref.current;
       if (!el) return;
@@ -34,15 +57,17 @@ export function useSortable({ id }) {
 
       setIsOver(inside);
 
-      //update before\after
-      const pointerY = pointer.y;
-      const centerY = (rect.top + rect.bottom) / 2;
-      const position = pointerY < centerY ? "before" : "after";
+      const isVertical = direction === SORT_DIRECTION.Vertical;
+      const pointerCoord = isVertical ? pointer.y : pointer.x;
+      const centerCoord = isVertical
+        ? (rect.top + rect.bottom) / 2
+        : (rect.left + rect.right) / 2;
 
-      //if position was changed update the state
+      const position = pointerCoord < centerCoord ? "before" : "after";
+
       if (lastPositionRef.current !== position) {
         lastPositionRef.current = position;
-        //update position inside active item
+
         useDndStore.setState((s) => ({
           activeItem: {
             ...s.activeItem,
@@ -68,7 +93,7 @@ export function useSortable({ id }) {
         cancelAnimationFrame(requestRef.current);
       }
     };
-  }, [activeItem, hoverId, id, updateHover]);
+  }, [activeItem, hoverId, id, updateHover, direction]);
 
   const isActive = activeItem?.id === id;
 
