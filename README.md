@@ -1,3 +1,5 @@
+LINK TO NPM: https://www.npmjs.com/package/react-dnd-zustand
+
 # react-dnd-zustand
 
 A lightweight and customizable drag-and-drop framework built with **React** and **Zustand**.  
