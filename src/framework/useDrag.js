@@ -3,30 +3,46 @@ import { useDndStore } from "./utils/dndStore";
 import mouseUpEventStore from "./utils/mouseUpEventStore";
 
 /**
- * Hook to make an element draggable.
- * Starts drag on mouse down, stores the dragged DOM element for ghost rendering,
- * tracks pointer position during dragging,
- * and ends drag on mouse up.
+ * Custom hook that enables drag behavior for an element.
  *
- * @param {Object} options
- * @param {string} options.id - Unique ID of the draggable item
- * @param {string} [options.type="default"] - Optional type identifier
- * @param {any} [options.data] - Optional metadata (e.g. group, index)
- * @returns {{ onMouseDown: (e: MouseEvent) => void }}
+ * Initializes drag on mouse down, tracks pointer position,
+ * and handles cleanup on mouse up. Integrates with the central
+ * mouse-up event store to allow coordinated drop actions.
+ *
+ * @param {Object} options - Configuration for the draggable element.
+ * @param {string} options.id - Unique identifier for the draggable item.
+ * @param {string} options.sortId - Group ID used for sorting and event handling.
+ * @param {string} [options.type="default"] - Optional type label for the item.
+ * @param {any} [options.data] - Optional metadata passed during drag (e.g., index, group).
+ * @returns {{ onMouseDown: (e: MouseEvent) => void }} Object containing an `onMouseDown` handler.
  */
-export function useDrag({ id, sortId,  type = "default", data }) {
+export function useDrag({ id, sortId, type = "default", data }) {
   const startDrag = useDndStore((s) => s.startDrag);
   const endDrag = useDndStore((s) => s.endDrag);
 
+  /**
+   * Initiates the drag behavior on mouse down.
+   * Attaches mousemove and mouseup listeners to track and complete the drag.
+   *
+   * @param {MouseEvent} event - The original mouse down event.
+   */
   const onMouseDown = useCallback(
     (event) => {
-      startDrag(id, { type, data:{
-        ...data,
-        sortId,
-      } }, event.currentTarget, {
-        x: event.clientX,
-        y: event.clientY,
-      });
+      startDrag(
+        id,
+        {
+          type,
+          data: {
+            ...data,
+            sortId,
+          },
+        },
+        event.currentTarget,
+        {
+          x: event.clientX,
+          y: event.clientY,
+        }
+      );
 
       const handleMouseMove = (e) => {
         useDndStore.setState((s) => ({
@@ -40,7 +56,6 @@ export function useDrag({ id, sortId,  type = "default", data }) {
       const handleMouseUp = () => {
         mouseUpEventStore.runEvents(sortId);
         mouseUpEventStore.removeEvents(sortId);
-
         endDrag();
 
         window.removeEventListener("mouseup", handleMouseUp);
@@ -50,7 +65,7 @@ export function useDrag({ id, sortId,  type = "default", data }) {
       window.addEventListener("mouseup", handleMouseUp);
       window.addEventListener("mousemove", handleMouseMove);
     },
-    [id, type, data, startDrag, endDrag]
+    [id, type, data, sortId, startDrag, endDrag]
   );
 
   return { onMouseDown };

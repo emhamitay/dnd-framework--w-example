@@ -27,7 +27,6 @@ export default function Group({ group }) {
   const sortId = useSortableDrop({
     items: group.users,
     onSorted: (newUsers) => {
-      console.log(newUsers);
       updateGroupUsers(group.id, newUsers);
     }
   });
