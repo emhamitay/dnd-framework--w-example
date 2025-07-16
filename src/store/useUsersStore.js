@@ -94,12 +94,12 @@ function sortAllGroups(groups) {
 }
 
 /**
- * Initializes the store with 2 default groups.
+ * Initializes the store with 1 default group.
  * @returns {Group[]} Array of groups
  */
 function Initialize() {
   const groups = [];
-  for (let i = 0; i < 2; i++) groups.push(new Group(i));
+  for (let i = 0; i < 1; i++) groups.push(new Group(i));
   return groups;
 }
 

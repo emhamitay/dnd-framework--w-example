@@ -2,6 +2,13 @@ import UserView from "./User";
 import { useDrop } from "../framework/useDrop";
 import useUserStore from "../store/useUsersStore";
 import { useSortableDrop } from "../framework/useSortableDrop";
+
+const Css_Flex_Row = 'flex flex-row p-5 gap-10 border-blue-100 rounded-2xl shadow ';
+const Css_Flex_Col = 'flex flex-col p-5 gap-10 border-blue-100 rounded-2xl shadow ';
+const Css_Grid = 'grid grid-cols-3 grid-rows-3 gap-5 p-5 border-blue-100 rounded-2xl shadow ';
+const header_flex = 'mb-0';
+const header_grid = 'col-span-3 mb-2';
+
 /**
  * Renders a group container that acts as a drop zone for users.
  * When a user is dropped into this group, moveUser is triggered.
@@ -33,10 +40,9 @@ export default function Group({ group }) {
   return (
     <div
       ref={dropRef}
-      className={`flex flex-row p-5 gap-10 border-blue-100 rounded-2xl shadow 
-        ${isOver ? "border-4" : "border"}`}
+      className={`${Css_Grid}${isOver ? "border-4" : "border"}`}
     >
-      <h3 className="mb-0">group {group.index}: </h3>
+      <h3 className={header_grid} >group {group.index}: </h3>
       {users.map((u) => (
         <UserView sortId={dropId} user={u} key={u.id} />
       ))}
