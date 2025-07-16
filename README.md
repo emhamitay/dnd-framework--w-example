@@ -8,7 +8,7 @@ Supports sorting, groups, ghost layer, and both vertical and horizontal directio
 ## ✨ Features
 
 - ✅ Custom drag-and-drop with ghost preview
-- ✅ Built-in sortable support (vertical / horizontal)
+- ✅ Built-in sortable support (vertical / horizontal / grid)
 - ✅ Group-based drag and move
 - ✅ Zustand-powered state management
 - ✅ No direct DOM access required
