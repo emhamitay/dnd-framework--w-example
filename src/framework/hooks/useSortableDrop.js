@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import { useDndStore } from "./utils/dndStore";
-import { calculateNewIndex, reorderArray } from "./utils/sortableUtils";
-import mouseUpEventStore from "./utils/mouseUpEventStore";
+import { useDndStore } from "../utils/dndStore";
+import { calculateNewIndex, switchArray } from "../utils/sortableUtils";
+import mouseUpEventStore from "../utils/MouseUpEventStore";
 
 const sortIdNameStart = "sortable-group-";
 
@@ -41,7 +41,7 @@ export function useSortableDrop({ items, onSorted, indexKey = "index" }) {
 
       if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) return;
 
-      const newItems = reorderArray(items, fromIndex, toIndex, indexKey);
+      const newItems = switchArray(items, fromIndex, toIndex, indexKey);
       onSorted?.(newItems);
     }
 

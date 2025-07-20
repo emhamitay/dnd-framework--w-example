@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import { useDndStore } from "./utils/dndStore";
-import mouseUpEventStore from "./utils/mouseUpEventStore";
+import { useDndStore } from "../utils/dndStore";
+import mouseUpEventStore from "../utils/MouseUpEventStore";
 
 /**
  * Custom hook that enables drag behavior for an element.

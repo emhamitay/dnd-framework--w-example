@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useDndStore } from "./utils/dndStore";
+import { useDndStore } from "../utils/dndStore";
 
 /**
  * Enum for sortable directions.

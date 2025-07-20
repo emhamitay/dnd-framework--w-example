@@ -31,7 +31,7 @@ export function calculateNewIndex(items, draggedId, hoverId, position = 'before'
  * @param {string} [indexKey='index'] - Field name that holds the item's position.
  * @returns {Array} The reordered array.
  */
-export function reorderArray(objects, indexFrom = 0, indexTo = 1, indexKey = 'index') {
+export function switchArray(objects, indexFrom = 0, indexTo = 1, indexKey = 'index') {
   // Validate indices
   if (
     indexFrom < 0 || indexFrom >= objects.length ||

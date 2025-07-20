@@ -1,6 +1,6 @@
 import useUserStore from "./store/useUsersStore";
 import Group from "./components/Group";
-import { DndProvider } from "./framework/DndProvider";
+import { DndProvider } from "./framework/context/DndProvider";
 import { GhostLayer } from "./framework/GhostLayer";
 
 function App() {
