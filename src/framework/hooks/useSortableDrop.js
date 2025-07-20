@@ -2,6 +2,12 @@ import { useEffect, useRef } from "react";
 import { useDndStore } from "../utils/dndStore";
 import { calculateNewIndex, switchArray } from "../utils/sortableUtils";
 import mouseUpEventStore from "../utils/MouseUpEventStore";
+import { insertItem } from "../utils/sortableUtils"; // נניח שהוספת את הפונקציה הזו
+
+export const SORT_MODE = {
+  Switch : "switch",
+  Insert : "insert"
+}
 
 const sortIdNameStart = "sortable-group-";
 
@@ -12,25 +18,18 @@ const sortIdNameStart = "sortable-group-";
  * @param {Array<Object>} params.items - The array of items to be sorted. Each item must have a unique `id` key.
  * @param {Function} params.onSorted - Callback called with the reordered array when sorting occurs.
  * @param {string} [params.indexKey="index"] - Optional key to sort items by. Defaults to "index".
+ * @param {"switch"|"insert"} [params.mode="insert"] - Whether to swap items or insert dragged item. Default is "insert".
  * @returns {string} A unique ID identifying this sortable group.
  */
-export function useSortableDrop({ items, onSorted, indexKey = "index" }) {
-  // The item currently being dragged
+export function useSortableDrop({ items, onSorted, indexKey = "index", mode = SORT_MODE.Insert }) {
   const activeItem = useDndStore((s) => s.activeItem);
-
-  // The ID of the item currently hovered over
   const hoverId = useDndStore((s) => s.hoverId);
-
-  // A unique ID for this sortable group, generated once
   const sortIdRef = useRef(`${sortIdNameStart}${crypto.randomUUID()}`);
   const sortId = sortIdRef.current;
 
   useEffect(() => {
     if (!activeItem) return;
 
-    /**
-     * Handler to run when mouse-up occurs; applies sorting logic.
-     */
     function mouseUpEvent() {
       if (!activeItem || !hoverId) return;
 
@@ -41,21 +40,24 @@ export function useSortableDrop({ items, onSorted, indexKey = "index" }) {
 
       if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) return;
 
-      const newItems = switchArray(items, fromIndex, toIndex, indexKey);
+      let newItems;
+      if (mode === SORT_MODE.Switch) {
+        newItems = switchArray(items, fromIndex, toIndex, indexKey);
+      } else {
+        // Default to insert mode
+        newItems = insertItem(items, fromIndex, toIndex, indexKey);
+      }
+
       onSorted?.(newItems);
     }
 
-    // Register the event and remove any existing one with this ID to prevent duplicates
     mouseUpEventStore.removeEvents(sortId);
     mouseUpEventStore.addEvent(sortId, mouseUpEvent);
 
-    // Cleanup on unmount or dependency change
     return () => {
-      //do not add clean up - runs before the useDrag utility
-      //becouse of that we added removeEvents before addEvents to fix the clean up problem
-      //also added clean up in the useDrag functioon
+      // Cleanup omitted as explained
     };
-  }, [activeItem, hoverId, items, onSorted, indexKey]);
+  }, [activeItem, hoverId, items, onSorted, indexKey, mode]);
 
   return sortId;
 }

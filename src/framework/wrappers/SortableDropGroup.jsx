@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useSortableDrop } from "../hooks/useSortableDrop";
+import { useSortableDrop , SORT_MODE } from "../hooks/useSortableDrop";
 import { SortableContext } from "../context/SortableContext";
 
 /**
@@ -11,9 +11,10 @@ import { SortableContext } from "../context/SortableContext";
  * @param {Function} props.onSorted - Callback with new sorted array
  * @param {React.ReactNode} props.children - React children nodes
  * @param {string} [props.indexKey="index"] - Key to use for sorting index
+ * @param {"switch"|"insert"} [props.mode="insert"] - Mode for sorting behavior: swap or insert
  */
-export function SortableDropGroup({ items, onSorted, children, indexKey = "index" }) {
-  const sortId = useSortableDrop({ items, onSorted, indexKey });
+export function SortableDropGroup({ items, onSorted, children, indexKey = "index", mode = SORT_MODE.Insert }) {
+  const sortId = useSortableDrop({ items, onSorted, indexKey, mode });
   const contextValue = useMemo(() => ({ sortId }), [sortId]);
 
   return (
