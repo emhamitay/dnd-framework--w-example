@@ -58,7 +58,6 @@ export function SortableDraggable({
         opacity: isActive ? 0.7 : 1,
         userSelect: "none",
         transition: "box-shadow 0.2s ease",
-        boxShadow: isOver ? "0 0 10px rgba(0, 150, 0, 0.5)" : "none",
         borderRadius: 8,
       }}
     >
