@@ -1,90 +1,116 @@
-🚀 Getting Started
-1. Wrap your app with DndProvider
-jsx
-Copy
-Edit
-import { DndProvider } from "./framework/DndProvider";
+LINK TO NPM: https://www.npmjs.com/package/react-dnd-zustand
 
-function App() {
-  return (
-    <DndProvider>
-      <YourApp />
-    </DndProvider>
-  );
-}
-2. Make Items Draggable
-jsx
-Copy
-Edit
-import { useDrag } from "./framework/useDrag";
+# react-dnd-zustand
 
-function DraggableItem({ id }) {
+A lightweight and customizable drag-and-drop framework built with **React** and **Zustand**.  
+Supports sorting, groups, ghost layer, and both vertical and horizontal directions — with no external dependencies other than React and Zustand.
+
+---
+
+## ✨ Features
+
+- ✅ Custom drag-and-drop with ghost preview
+- ✅ Built-in sortable support (vertical / horizontal / grid)
+- ✅ Group-based drag and move
+- ✅ Zustand-powered state management
+- ✅ No direct DOM access required
+- ✅ Written in clean modular JavaScript
+
+---
+
+## 📦 Installation
+
+```bash
+npm install react-dnd-zustand
+```
+
+**Peer dependencies**:
+
+```bash
+npm install react zustand
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1. Wrap your app with `DndProvider`
+
+```jsx
+import { DndProvider } from "react-dnd-zustand";
+
+<DndProvider>
+  <App />
+</DndProvider>
+```
+
+### 2. Make items draggable
+
+```jsx
+import { useDrag } from "react-dnd-zustand";
+
+function Item({ id }) {
   const { onMouseDown } = useDrag({ id });
 
-  return (
-    <div onMouseDown={onMouseDown}>
-      Drag me
-    </div>
-  );
+  return <div onMouseDown={onMouseDown}>Drag me</div>;
 }
-3. Enable Drop Zones
-jsx
-Copy
-Edit
-import { useDrop } from "./framework/useDrop";
+```
+
+### 3. Create drop zones
+
+```jsx
+import { useDrop } from "react-dnd-zustand";
 
 function DropZone({ id, onDrop }) {
   const { dropRef, isOver } = useDrop({ id, onDrop });
 
   return (
-    <div ref={dropRef} className={isOver ? "highlight" : ""}>
-      Drop items here
+    <div ref={dropRef} style={{ background: isOver ? "lightgreen" : "white" }}>
+      Drop here
     </div>
   );
 }
-4. Enable Sorting
-a. Per item (useSortable)
-jsx
-Copy
-Edit
-import { useSortable } from "./framework/useSortable";
+```
 
-function SortableItem({ id }) {
-  const { ref } = useSortable({ id });
-  return <div ref={ref}>Sortable {id}</div>;
-}
-b. Per list (useSortableDrop)
-jsx
-Copy
-Edit
-import { useSortableDrop } from "./framework/useSortableDrop";
+### 4. Sort items (optional)
 
-function SortableList({ items, onSorted }) {
-  const sortId = useSortableDrop({
-    items,
-    onSorted,
-  });
+```jsx
+import { useSortableDrop, useSortable, SORT_DIRECTION } from "react-dnd-zustand";
 
-  return (
-    <div>
-      {items.map(item => (
-        <SortableItem key={item.id} id={item.id} sortId={sortId} />
-      ))}
-    </div>
-  );
-}
-🧠 Features
-✅ Custom drag logic with Zustand state
+//on Sortable Area (with holds all the items)
+const sortId = useSortableDrop({
+  items,
+  onSorted: (newList) => setItems(newList)
+});
 
-✅ Ghost layer rendered via portal
+//on the sortable Items
+const { ref } = useSortable({ id: item.id, direction: SORT_DIRECTION.Vertical });
+```
 
-✅ Fine-grained onDrop and onSorted handlers
+---
 
-✅ Vertical / Horizontal / Grid sorting support
+## 📘 API Reference
 
-✅ Multiple sortable zones (via unique sortId)
+### `useDrag({ id, data?, type? })`
+- Starts a drag operation with optional metadata.
 
-✅ Clean separation of logic and UI
+### `useDrop({ id, onDrop })`
+- Registers a drop zone and handles item drop.
 
-✅ No external DnD dependencies
+### `useSortable({ id, direction? })`
+- Allows an item to be sorted inside a sortable group.
 
+### `useSortableDrop({ items, onSorted, indexKey? })`
+- Enables drag-and-drop sorting for an array of items.
+
+### `DndProvider`
+- Must wrap your app to enable drag-and-drop context.
+
+### `SORT_DIRECTION`
+- Enum for `"vertical"` or `"horizontal"`.
+
+---
+
+## 📄 License
+
+MIT © Amitay Englender
