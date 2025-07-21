@@ -2,12 +2,20 @@
 import React, { useEffect } from "react";
 
 /**
- * DndProvider wraps your application and activates the drag-and-drop system.
- * Injects required drag-and-drop styles into the document head.
+ * `DndProvider` is a context-free wrapper component that prepares the DOM
+ * for drag-and-drop usage. It ensures required styles (like disabling user selection)
+ * are injected only once into the document head.
+ *
+ * Wrap your entire application (or the part that uses drag-and-drop) with this provider.
+ *
+ * @component
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - The content to render inside the provider.
+ * @returns {React.ReactElement} The children wrapped with drag-and-drop setup.
  */
 export function DndProvider({ children }) {
   useEffect(() => {
-    // Only inject once
+    // Only inject the no-select style once per document
     if (typeof document !== "undefined" && !document.getElementById("dnd-noselect-style")) {
       const style = document.createElement("style");
       style.id = "dnd-noselect-style";
@@ -22,5 +30,6 @@ export function DndProvider({ children }) {
       document.head.appendChild(style);
     }
   }, []);
+
   return <>{children}</>;
 }

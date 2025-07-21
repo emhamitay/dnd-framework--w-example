@@ -1,19 +1,27 @@
 import React, { useMemo } from "react";
-import { useSortableDrop , SORT_MODE } from "../hooks/useSortableDrop";
+import { useSortableDrop, SORT_MODE } from "../hooks/useSortableDrop";
 import { SortableContext } from "../context/SortableContext";
 
 /**
- * Provides sortId via React Context to all descendants,
- * enables multiple nested SortableDropGroups without prop drilling.
- * 
+ * Provides sortable group behavior and context.
+ * Allows children to access the current `sortId` via context.
+ *
+ * @component
  * @param {Object} props
- * @param {Array} props.items - Array of sortable items with unique ids
- * @param {Function} props.onSorted - Callback with new sorted array
- * @param {React.ReactNode} props.children - React children nodes
- * @param {string} [props.indexKey="index"] - Key to use for sorting index
- * @param {"switch"|"insert"} [props.mode="insert"] - Mode for sorting behavior: swap or insert
+ * @param {Array} props.items - Array of sortable items (must contain unique `id` per item).
+ * @param {Function} props.onSorted - Callback called with updated item order.
+ * @param {React.ReactNode} props.children - Descendants (usually `SortableDraggable`).
+ * @param {string} [props.indexKey="index"] - Key name used for sorting.
+ * @param {"switch"|"insert"} [props.mode="insert"] - Sorting mode to use.
+ * @returns {React.ReactElement}
  */
-export function SortableDropGroup({ items, onSorted, children, indexKey = "index", mode = SORT_MODE.Insert }) {
+export function SortableDropGroup({
+  items,
+  onSorted,
+  children,
+  indexKey = "index",
+  mode = SORT_MODE.Insert,
+}) {
   const sortId = useSortableDrop({ items, onSorted, indexKey, mode });
   const contextValue = useMemo(() => ({ sortId }), [sortId]);
 

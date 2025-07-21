@@ -4,15 +4,17 @@ import { useSortable, SORT_DIRECTION } from "../hooks/useSortable";
 import { SortableContext } from "../context/SortableContext";
 
 /**
- * Combines sortable + draggable logic into one component.
- * Automatically uses the nearest sortId from context.
- * Supports render props pattern or regular children.
- * 
+ * Combines sortable and draggable behavior for a single item.
+ * Uses nearest sortId from context or accepts override via props.
+ * Supports both children as JSX and render props pattern.
+ *
+ * @component
  * @param {Object} props
- * @param {string} props.id - Unique id of the draggable item
- * @param {string} [props.sortId] - Optional override for sortId (defaults to context)
- * @param {string} [props.direction] - Sort direction, default vertical
- * @param {React.ReactNode|function} props.children - Children or render function
+ * @param {string} props.id - Unique ID of the item.
+ * @param {string} [props.sortId] - Optional override for sort group ID.
+ * @param {"horizontal"|"vertical"} [props.direction="vertical"] - Drag direction.
+ * @param {React.ReactNode|function} props.children - Children node or render function.
+ * @returns {React.ReactElement}
  */
 export function SortableDraggable({
   id,
@@ -20,7 +22,6 @@ export function SortableDraggable({
   direction = SORT_DIRECTION.Vertical,
   children,
 }) {
-  // Use sortId from context if not passed explicitly
   const context = useContext(SortableContext);
   const sortId = sortIdProp ?? context?.sortId;
 
@@ -31,7 +32,6 @@ export function SortableDraggable({
   const { ref: sortableRef, isOver, isActive } = useSortable({ id, direction });
   const { onMouseDown } = useDrag({ id, sortId });
 
-  // Combine refs
   const setRef = (node) => {
     sortableRef.current = node;
   };
@@ -43,12 +43,10 @@ export function SortableDraggable({
     onMouseDown,
   };
 
-  // Support render function as children
   if (typeof children === "function") {
     return children(renderProps);
   }
 
-  // Default rendering
   return (
     <div
       ref={setRef}
