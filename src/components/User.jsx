@@ -9,12 +9,12 @@ import { SortableDraggable } from "../framework/wrappers/SortableDraggable";
  * @param {Object} props
  * @param {Object} props.user - The user object with id, name, groupId, etc.
  */
-export default function User({ sortId, user }) {
+export default function User({ user }) {
   //const { onMouseDown } = useDrag({ id: user.id, sortId , data: { id: user.id } });
   //const { ref } = useSortable({id : user.id, direction: SORT_DIRECTION.Grid})
 
   return (
-    <SortableDraggable id={user.id} sortId={sortId}>
+    <SortableDraggable id={user.id}>
       <div className="w-52 p-5 bg-blue-50 border border-blue-100 rounded-2xl shadow cursor-grab">
         {user.index} : {user.name}
       </div>

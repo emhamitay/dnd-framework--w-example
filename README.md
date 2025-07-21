@@ -1,90 +1,116 @@
-🚀 Getting Started
-1. Wrap your app with DndProvider
-jsx
-Copy
-Edit
-import { DndProvider } from "./framework/DndProvider";
 
-function App() {
+# bhi-dnd
+
+A lightweight and modular drag-and-drop framework for React with sorting support.
+
+## 📦 Installation
+
+```bash
+npm install bhi-dnd
+```
+
+## 🚀 Quick Start Tutorial
+
+### 1. Wrapping your app
+
+```jsx
+import { DndProvider } from "bhi-dnd";
+
+export default function App() {
   return (
     <DndProvider>
-      <YourApp />
+      {/* your drag-and-drop components here */}
     </DndProvider>
   );
 }
-2. Make Items Draggable
-jsx
-Copy
-Edit
-import { useDrag } from "./framework/useDrag";
+```
 
-function DraggableItem({ id }) {
-  const { onMouseDown } = useDrag({ id });
+### 2. Draggable Item
 
-  return (
-    <div onMouseDown={onMouseDown}>
-      Drag me
-    </div>
-  );
-}
-3. Enable Drop Zones
-jsx
-Copy
-Edit
-import { useDrop } from "./framework/useDrop";
+```jsx
+import { Draggable } from "bhi-dnd";
 
-function DropZone({ id, onDrop }) {
-  const { dropRef, isOver } = useDrop({ id, onDrop });
+<Draggable id="item-1">
+  <div>Drag me!</div>
+</Draggable>
+```
 
-  return (
-    <div ref={dropRef} className={isOver ? "highlight" : ""}>
-      Drop items here
-    </div>
-  );
-}
-4. Enable Sorting
-a. Per item (useSortable)
-jsx
-Copy
-Edit
-import { useSortable } from "./framework/useSortable";
+### 3. Droppable Zone
 
-function SortableItem({ id }) {
-  const { ref } = useSortable({ id });
-  return <div ref={ref}>Sortable {id}</div>;
-}
-b. Per list (useSortableDrop)
-jsx
-Copy
-Edit
-import { useSortableDrop } from "./framework/useSortableDrop";
+```jsx
+import { Droppable } from "bhi-dnd";
 
-function SortableList({ items, onSorted }) {
-  const sortId = useSortableDrop({
-    items,
-    onSorted,
-  });
+<Droppable id="zone-1" onDrop={(item) => console.log(item)}>
+  <div>Drop here!</div>
+</Droppable>
+```
 
-  return (
-    <div>
-      {items.map(item => (
-        <SortableItem key={item.id} id={item.id} sortId={sortId} />
-      ))}
-    </div>
-  );
-}
-🧠 Features
-✅ Custom drag logic with Zustand state
+### 4. Sortable Items
 
-✅ Ghost layer rendered via portal
+```jsx
+import { SortableDropGroup } from "bhi-dnd";
 
-✅ Fine-grained onDrop and onSorted handlers
+const items = ["item-1", "item-2", "item-3"];
 
-✅ Vertical / Horizontal / Grid sorting support
+<SortableDropGroup
+  id="group-1"
+  items={items}
+  onSorted={(newItems) => console.log(newItems)}
+  renderItem={(id) => <div key={id}>{id}</div>}
+/>
+```
 
-✅ Multiple sortable zones (via unique sortId)
+### 5. Droppable + Sortable Combo
 
-✅ Clean separation of logic and UI
+```jsx
+import { DroppableSortableWrapper } from "bhi-dnd";
 
-✅ No external DnD dependencies
+<DroppableSortableWrapper
+  id="zone-1"
+  items={["a", "b", "c"]}
+  onSorted={(newOrder) => console.log(newOrder)}
+  renderItem={(id) => <div key={id}>{id}</div>}
+/>
+```
 
+## 🔧 API Reference
+
+### `<Droppable />`
+
+| Prop      | Type       | Description                            |
+|-----------|------------|----------------------------------------|
+| `id`      | `string`   | Unique identifier for the zone         |
+| `onDrop`  | `function` | Called when an item is dropped         |
+| `isOver`  | `boolean`  | `true` when an item is over the zone   |
+| `isActive`| `boolean`  | `true` when the zone is accepting drop |
+
+### `<Draggable />`
+
+| Prop      | Type       | Description                            |
+|-----------|------------|----------------------------------------|
+| `id`      | `string`   | Unique ID of the draggable item        |
+| `children`| `node`     | Content to render                      |
+
+### `<SortableDropGroup />`
+
+| Prop        | Type         | Description                                |
+|-------------|--------------|--------------------------------------------|
+| `id`        | `string`     | ID for the sortable group                  |
+| `items`     | `string[]`   | Array of sortable item IDs                 |
+| `onSorted`  | `function`   | Called with the new sorted array           |
+| `renderItem`| `function`   | Function to render each item by its ID     |
+
+### `<DroppableSortableWrapper />`
+
+Combines both `Droppable` and `SortableDropGroup`. Props:
+
+- All props from `Droppable`
+- All props from `SortableDropGroup`
+
+## 🧪 Advanced
+
+This library is fully compatible with Zustand or your own state manager, but this package uses internal logic without exposing Zustand.
+
+---
+
+Made with ❤️ for modular React DnD needs.
