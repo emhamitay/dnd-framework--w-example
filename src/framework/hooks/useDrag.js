@@ -28,6 +28,17 @@ export function useDrag({ id, sortId, type = "default", data }) {
    */
   const onMouseDown = useCallback(
     (event) => {
+// Prevent drag start if already handled or not left click
+      if (event.defaultPrevented || event.button !== 0) {
+        return;
+      }
+
+      // Prevent drag start if clicking on interactive elements or their children
+      if (isInteractive(event.target)) {
+        return;
+      }
+
+      // Start dragging process
       startDrag(
         id,
         {
@@ -69,4 +80,15 @@ export function useDrag({ id, sortId, type = "default", data }) {
   );
 
   return { onMouseDown };
+}
+
+/**
+ * Checks if the element or one of its parents is interactive
+ * by matching common interactive selectors.
+ */
+function isInteractive(element) {
+  if (!element) return false;
+  return element.closest(
+    "button, [role=button], [tabindex]:not([tabindex='-1']), input, select, textarea, a[href], summary, label"
+  ) !== null;
 }
