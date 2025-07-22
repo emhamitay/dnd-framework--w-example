@@ -57,7 +57,7 @@ export function useSortableDrop({
      * and applying the appropriate reorder logic.
      */
     function mouseUpEvent() {
-      if (!activeItem || !hoverId) return;
+      if (!activeItem || !hoverId || !items || !Array.isArray(items)) return;
 
       const draggedId = activeItem.id;
       const fromIndex = items.findIndex((item) => item.id === draggedId);
