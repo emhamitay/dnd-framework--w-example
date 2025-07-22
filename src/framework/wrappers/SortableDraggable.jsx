@@ -14,13 +14,15 @@ import { SortableContext } from "../context/SortableContext";
  * @param {string} [props.sortId] - Optional override for sort group ID.
  * @param {"horizontal"|"vertical"} [props.direction="vertical"] - Drag direction.
  * @param {React.ReactNode|function} props.children - Children node or render function.
+ * @param {string} [props.className] - Optional CSS class names for the wrapper div.
  * @returns {React.ReactElement}
  */
 export function SortableDraggable({
   id,
   sortId: sortIdProp,
   direction = SORT_DIRECTION.Vertical,
-  children,
+  children, 
+  className
 }) {
   const context = useContext(SortableContext);
   const sortId = sortIdProp ?? context?.sortId;
@@ -51,6 +53,7 @@ export function SortableDraggable({
     <div
       ref={setRef}
       onMouseDown={onMouseDown}
+      className={className}
       style={{
         cursor: isActive ? "grabbing" : "grab",
         opacity: isActive ? 0.7 : 1,

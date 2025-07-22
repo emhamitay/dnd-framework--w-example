@@ -13,6 +13,7 @@ import { SortableContext } from "../context/SortableContext";
  * @param {React.ReactNode} props.children - Descendants (usually `SortableDraggable`).
  * @param {string} [props.indexKey="index"] - Key name used for sorting.
  * @param {"switch"|"insert"} [props.mode="insert"] - Sorting mode to use.
+ * @param {string} [props.className] - Optional CSS class names for the wrapper div.
  * @returns {React.ReactElement}
  */
 export function SortableDropGroup({
@@ -21,13 +22,22 @@ export function SortableDropGroup({
   children,
   indexKey = "index",
   mode = SORT_MODE.Insert,
+  className,
 }) {
-  const sortId = useSortableDrop({ items, onSorted, indexKey, mode });
+  const sortId = useSortableDrop({
+    items,
+    onSorted,
+    indexKey,
+    mode,
+    className,
+  });
   const contextValue = useMemo(() => ({ sortId }), [sortId]);
 
   return (
     <SortableContext.Provider value={contextValue}>
-      {children}
+      <div className={className}>
+        {children}
+      </div>
     </SortableContext.Provider>
   );
 }
