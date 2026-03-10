@@ -1,7 +1,7 @@
 import useUserStore from "./store/useUsersStore";
 import Group from "./components/Group";
-import { DndProvider } from "./framework/context/DndProvider";
-import { GhostLayer } from "./framework/GhostLayer";
+import { DndProvider } from "../src/context/DndProvider";
+import { GhostLayer } from "../src/GhostLayer";
 
 function App() {
   const groups = useUserStore((s) => s.groups);

@@ -1,6 +1,6 @@
 // components/User.jsx
 //import { Draggable } from "../framework/wrappers/Draggable";
-import { SortableDraggable } from "../framework/wrappers/SortableDraggable";
+import { SortableDraggable } from "../../src/wrappers/SortableDraggable";
 
 /**
  * A draggable User component.

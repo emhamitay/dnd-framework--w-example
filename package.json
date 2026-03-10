@@ -1,8 +1,11 @@
 {
-  "name": "dnd-framework",
-  "private": true,
-  "version": "0.0.0",
+  "name": "react-dnd-framework",
+  "version": "1.0.0",
+  "description": "A lightweight, flexible drag-and-drop framework for React — supports free drag, droppable zones, and sortable lists out of the box.",
   "type": "module",
+  "main": "src/index.js",
+  "keywords": ["react", "drag-and-drop", "dnd", "sortable", "droppable", "draggable"],
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

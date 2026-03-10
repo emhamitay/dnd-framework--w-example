@@ -1,6 +1,6 @@
 import UserView from "./User";
 import useUserStore from "../store/useUsersStore";
-import { DroppableSortableWrapper } from "../framework/wrappers/DroppableSortableWrapper";
+import { DroppableSortableWrapper } from "../../src/wrappers/DroppableSortableWrapper";
 
 const Css_Flex_Row =
   "flex flex-row p-5 gap-10 border-blue-100 rounded-2xl shadow ";
