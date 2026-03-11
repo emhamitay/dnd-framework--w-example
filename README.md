@@ -1,52 +1,199 @@
-# 📦 bhi-dnd
+# ⚡ Ghost Drop
 
-Lightweight and flexible drag-and-drop library for React with optional sorting support.
+A lightweight, flexible drag-and-drop library built from scratch for React.  
+Free drag, droppable zones, and sortable lists — with a portal-based ghost layer that renders above everything.
+
+[![npm](https://img.shields.io/npm/v/ghostdrop?color=6366f1&label=npm)](https://www.npmjs.com/package/ghostdrop)
+[![license](https://img.shields.io/badge/license-MIT-emerald)](LICENSE)
+[![live demo](https://img.shields.io/badge/demo-live-blue)](https://emhamitay.github.io/ghostdrop)
 
 ---
 
-## ⚡ Quick Start
+## Why Ghost Drop?
 
-### 1. Setup `<DndContext>`
+Most drag-and-drop libraries render the drag preview inside the DOM tree — which means it can be clipped by `overflow: hidden` containers or buried under other elements' `z-index` values.
 
-Wrap your app with `DndContext` to initialize drag-and-drop logic:
+Ghost Drop renders the drag preview through a **React portal directly on `document.body`**. It always floats above everything, regardless of your layout. That was the original reason this library was built from scratch.
 
-```jsx
-import { DndContext } from "bhi-dnd";
+Other design decisions:
+- **No native HTML5 drag events** — uses `mousedown` / `mousemove` / `mouseup` for full control over the drag lifecycle
+- **Zustand** for shared drag state — minimal, no Context re-render overhead on every mouse move
+- **Dynamic callbacks** — `onDrop` and `onSorted` are read at call time, so closures always have fresh state without needing `useCallback`
+- **Isolated groups** — multiple `DndProvider` trees on the same page don't interfere with each other
 
-<DndContext>
-  {/* your app here */}
-</DndContext>
+---
+
+## Live Demo
+
+**[emhamitay.github.io/ghostdrop](https://emhamitay.github.io/ghostdrop)**
+
+Interactive examples: basic drop → hover feedback → sortable list → drag into sortable → multiple independent groups.
+
+---
+
+## Install
+
+```bash
+npm install ghostdrop
 ```
 
 ---
 
-### 2. Add `<GhostLayer />` (Optional but recommended)
-
-This renders the dragged item visually.
+## Quick Start
 
 ```jsx
-import { GhostLayer } from "bhi-dnd";
+import { DndProvider, GhostLayer, Draggable, Droppable } from 'ghostdrop';
 
-<GhostLayer />
+function App() {
+  const [dropped, setDropped] = useState(null);
+
+  return (
+    <DndProvider>
+      <GhostLayer />
+
+      <Draggable id="item-1">
+        <div className="card">📄 Drag me</div>
+      </Draggable>
+
+      <Droppable id="zone" onDrop={(item) => setDropped(item.id)}>
+        <div className="drop-zone">
+          {dropped ? `✓ ${dropped} landed!` : 'Drop here'}
+        </div>
+      </Droppable>
+    </DndProvider>
+  );
+}
 ```
 
-Place it inside `DndContext`, ideally just once at the root level, outside any draggable components.
+### With hover feedback
+
+Pass a function as `Droppable`'s children to get `isOver` and `ref`:
+
+```jsx
+<Droppable id="zone" onDrop={handleDrop}>
+  {(isOver, ref) => (
+    <div
+      ref={ref}
+      style={{ background: isOver ? '#dbeafe' : '#f8fafc' }}
+    >
+      {isOver ? 'Release!' : 'Drop here'}
+    </div>
+  )}
+</Droppable>
+```
+
+### Sortable list
+
+```jsx
+import { DndProvider, GhostLayer, SortableDropGroup, SortableDraggable } from 'ghostdrop';
+
+const INITIAL = [
+  { id: 'a', label: 'Alpha', index: 0 },
+  { id: 'b', label: 'Beta', index: 1 },
+  { id: 'c', label: 'Gamma', index: 2 },
+];
+
+function SortableList() {
+  const [items, setItems] = useState(INITIAL);
+
+  return (
+    <DndProvider>
+      <GhostLayer />
+      <SortableDropGroup items={items} onSorted={setItems}>
+        {items.map((item) => (
+          <SortableDraggable key={item.id} id={item.id}>
+            <div className="row">{item.label}</div>
+          </SortableDraggable>
+        ))}
+      </SortableDropGroup>
+    </DndProvider>
+  );
+}
+```
 
 ---
 
-### 3. Make Items Draggable
+## API
 
-Use `Draggable` to wrap any element and make it draggable.
+### Components
 
-```jsx
-import { Draggable } from "bhi-dnd";
+| Component | Description |
+|---|---|
+| `<DndProvider>` | Required root. Initializes the Zustand store. |
+| `<GhostLayer />` | Renders the drag preview via a React portal on `document.body`. |
+| `<Draggable id type? data?>` | Makes any element draggable. |
+| `<Droppable id onDrop children>` | Defines a drop zone. Children can be JSX or `(isOver, ref) => JSX`. |
+| `<SortableDropGroup items onSorted mode? indexKey?>` | A group of sortable items. |
+| `<SortableDraggable id>` | Draggable item inside a `SortableDropGroup`. |
+| `<DroppableSortableWrapper>` | Combines `Droppable` + `SortableDropGroup` in one component. |
 
-<Draggable id="item-1">
-  <div>Drag me</div>
-</Draggable>
+### Hooks (for custom implementations)
+
+| Hook | Returns |
+|---|---|
+| `useDrag({ id, type?, data? })` | `{ onMouseDown }` |
+| `useDrop({ id, onDrop })` | `{ dropRef, isOver }` |
+| `useSortable({ id, direction? })` | `{ ref, isOver, isActive }` |
+| `useSortableDrop({ items, onSorted, indexKey?, mode? })` | `sortId` (string) |
+
+### Enums
+
+```js
+import { SORT_MODE, SORT_DIRECTION } from 'ghostdrop';
+
+SORT_MODE.Switch   // swap positions
+SORT_MODE.Insert   // shift items (default)
+
+SORT_DIRECTION.Vertical    // default
+SORT_DIRECTION.Horizontal
+SORT_DIRECTION.Grid
 ```
 
 ---
+
+## Architecture
+
+```
+DndProvider
+└── DndStore (Zustand)           ← single source of truth for drag state
+    ├── activeItem               ← what's being dragged (id, type, data, element)
+    ├── hoverId                  ← which drop zone the cursor is over
+    └── mouseUpHandlers          ← registered per drop zone, fired on release
+
+GhostLayer
+└── React portal → document.body ← renders above ALL DOM stacking contexts
+
+Draggable / useDrag
+└── mousedown → startDrag()
+└── mousemove → updates pointer position in store
+└── mouseup   → fires registered drop handlers → endDrag()
+
+Droppable / useDrop
+└── pointerenter → updateHover(id)
+└── pointerleave → updateHover(null)
+└── registers mouseup handler → calls onDrop if cursor is inside zone
+
+SortableDropGroup / SortableDraggable
+└── tracks insertion index during drag
+└── calls onSorted(newArray) on drop
+```
+
+The key design: **drop detection happens at the `Droppable` level, not at the `Draggable` level**. Each drop zone registers its own mouseup handler into a central store. When the user releases, only the handler for the zone under the cursor fires. This makes cross-group interactions and dynamic callbacks straightforward.
+
+---
+
+## Roadmap
+
+- [ ] Touch / mobile support
+- [ ] TypeScript types
+- [ ] `onHover(item)` callback — fires while a specific item is over a zone
+- [ ] Keyboard accessibility
+
+---
+
+## License
+
+MIT © [emhamitay](https://github.com/emhamitay)
 
 ### 4. Define a Drop Zone
 
