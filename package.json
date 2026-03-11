@@ -1,10 +1,11 @@
 {
-  "name": "react-dnd-framework",
+  "name": "ghostdrop",
   "version": "1.0.0",
   "description": "A lightweight, flexible drag-and-drop framework for React — supports free drag, droppable zones, and sortable lists out of the box.",
   "type": "module",
   "main": "src/index.js",
-  "keywords": ["react", "drag-and-drop", "dnd", "sortable", "droppable", "draggable"],
+  "repository": { "type": "git", "url": "https://github.com/emhamitay/ghostdrop" },
+  "keywords": ["react", "drag-and-drop", "dnd", "sortable", "droppable", "draggable", "ghostdrop"],
   "license": "MIT",
   "scripts": {
     "dev": "vite",

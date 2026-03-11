@@ -4,14 +4,16 @@ export function Footer() {
       <div className="max-w-4xl mx-auto text-center">
         <div className="flex items-center justify-center gap-2 mb-3">
           <span className="text-indigo-400 font-black text-xl">⚡</span>
-          <span className="font-bold text-white text-lg">DnD Framework</span>
+          <span className="font-black text-white text-lg">
+            Ghost<span className="text-indigo-400"> Drop</span>
+          </span>
         </div>
         <p className="text-sm mb-6 text-slate-400">
-          A lightweight, flexible drag-and-drop library built from scratch for React.
+          A lightweight drag-and-drop library for React — built from scratch.
         </p>
         <div className="flex justify-center gap-8 text-sm mb-8">
           <a
-            href="https://github.com/yourusername/react-dnd-framework"
+            href="https://github.com/emhamitay/ghostdrop"
             target="_blank"
             rel="noreferrer"
             className="hover:text-white transition-colors"
@@ -19,7 +21,7 @@ export function Footer() {
             GitHub
           </a>
           <a
-            href="https://npmjs.com/package/react-dnd-framework"
+            href="https://npmjs.com/package/ghostdrop"
             target="_blank"
             rel="noreferrer"
             className="hover:text-white transition-colors"

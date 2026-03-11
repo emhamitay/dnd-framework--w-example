@@ -4,9 +4,9 @@ import { GhostLayer } from "../../src/GhostLayer";
 import { Draggable } from "../../src/wrappers/Draggable";
 import { Droppable } from "../../src/wrappers/Droppable";
 
-const INSTALL_CODE = `npm install react-dnd-framework`;
+const INSTALL_CODE = `npm install ghostdrop`;
 
-const USAGE_CODE = `import { DndProvider, GhostLayer, Draggable, Droppable } from 'react-dnd-framework';
+const USAGE_CODE = `import { DndProvider, GhostLayer, Draggable, Droppable } from 'ghostdrop';
 
 function App() {
   return (

@@ -3,8 +3,10 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-slate-200 shadow-sm">
       <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-indigo-600 font-black text-xl">⚡</span>
-          <span className="font-bold text-slate-900 text-lg">DnD Framework</span>
+          <span className="text-indigo-500 font-black text-2xl leading-none">⚡</span>
+          <span className="font-black text-slate-900 text-lg tracking-tight">
+            Ghost<span className="text-indigo-600"> Drop</span>
+          </span>
         </div>
         <div className="flex items-center gap-4">
           <a href="#how-it-works" className="text-sm text-slate-600 hover:text-slate-900 transition-colors font-medium hidden sm:block">
@@ -20,7 +22,7 @@ export function Navbar() {
             API
           </a>
           <a
-            href="https://github.com/yourusername/react-dnd-framework"
+            href="https://github.com/emhamitay/ghostdrop"
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-2 text-sm bg-slate-900 hover:bg-slate-700 text-white font-semibold px-4 py-1.5 rounded-lg transition-colors"
