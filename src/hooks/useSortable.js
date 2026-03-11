@@ -22,22 +22,25 @@ export const SORT_DIRECTION = {
  * @param {Object} options - Options for the sortable hook
  * @param {string} options.id - Unique identifier for the item
  * @param {string} [options.direction='vertical'] - Sorting direction: "vertical", "horizontal", or "grid"
+ * @param {(item: { id: string, data: any }) => void} [options.onHoverEnter] - Called when a dragged item enters this element.
+ * @param {(item: { id: string, data: any }) => void} [options.onHoverLeave] - Called when a dragged item leaves this element.
  * @returns {{
  *   ref: React.RefObject<HTMLElement>,
- *   isOver: boolean,
+ *   isHover: boolean,
  *   isActive: boolean
  * }}
  */
-export function useSortable({ id, direction = SORT_DIRECTION.Vertical }) {
+export function useSortable({ id, direction = SORT_DIRECTION.Vertical, onHoverEnter, onHoverLeave }) {
   const ref = useRef(null);
   const requestRef = useRef(null);
   const lastPositionRef = useRef(null);
+  const wasInsideRef = useRef(false);
 
   const activeItem = useDndStore((s) => s.activeItem);
   const hoverId = useDndStore((s) => s.hoverId);
   const updateHover = useDndStore((s) => s.updateHover);
 
-  const [isOver, setIsOver] = useState(false);
+  const [isHover, setIsHover] = useState(false);
 
   useEffect(() => {
     if (!activeItem || !activeItem.pointerPosition) return;
@@ -61,7 +64,17 @@ export function useSortable({ id, direction = SORT_DIRECTION.Vertical }) {
         pointer.y >= rect.top &&
         pointer.y <= rect.bottom;
 
-      setIsOver(inside);
+      setIsHover(inside);
+
+      // Fire enter/leave callbacks on transition
+      if (inside !== wasInsideRef.current) {
+        wasInsideRef.current = inside;
+        if (inside) {
+          onHoverEnter?.(activeItem);
+        } else {
+          onHoverLeave?.(activeItem);
+        }
+      }
 
       let position;
 
@@ -126,14 +139,14 @@ export function useSortable({ id, direction = SORT_DIRECTION.Vertical }) {
         cancelAnimationFrame(requestRef.current);
       }
     };
-  }, [activeItem, hoverId, id, updateHover, direction]);
+  }, [activeItem, hoverId, id, updateHover, direction, onHoverEnter, onHoverLeave]);
 
   // Whether this item is the currently active dragged item
   const isActive = activeItem?.id === id;
 
   return {
     ref,
-    isOver,
+    isHover,
     isActive,
   };
 }

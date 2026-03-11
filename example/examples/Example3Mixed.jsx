@@ -15,8 +15,8 @@ const CODE = `// Mix Droppable + Sortable in one component:
   onSorted={setTeamItems}
   onDrop={(item) => addToTeam(item.id)}
 >
-  {({ isOver }) => (
-    <div className={isOver ? "column column--over" : "column"}>
+  {({ isHover }) => (
+    <div className={isHover ? "column column--over" : "column"}>
       {teamItems.map((m) => (
         <SortableDraggable key={m.id} id={m.id}>
           <div className="card">{m.name}</div>
@@ -94,9 +94,9 @@ function Demo() {
             onSorted={setTeam}
             onDrop={(item) => addToTeam(item.id)}
           >
-            {({ isOver }) => (
+            {({ isHover }) => (
               <div className={`flex flex-col gap-2 min-h-24 rounded-xl border-2 border-dashed p-3 transition-all duration-150 ${
-                isOver ? "border-indigo-400 bg-indigo-50" : "border-slate-200 bg-slate-50"
+                isHover ? "border-indigo-400 bg-indigo-50" : "border-slate-200 bg-slate-50"
               }`}>
                 {team.map((p) => (
                   <SortableDraggable key={p.id} id={p.id}>

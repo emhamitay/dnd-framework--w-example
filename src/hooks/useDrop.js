@@ -7,28 +7,34 @@ import { useDndStore } from "../utils/dndStore";
  *
  * @param {Object} options - Configuration options for the drop zone.
  * @param {string} options.id - Unique identifier for this drop zone.
- * @param {(activeItem: { id: string, type: string, data: any }) => void} options.onDrop - Callback triggered when an item is dropped on this zone.
- * @returns {{ dropRef: React.RefObject, isOver: boolean }} - Ref to attach to the drop zone element and a flag indicating if an item is currently hovering over it.
+ * @param {(item: { id: string, data: any }) => void} [options.onDrop] - Callback triggered when an item is dropped on this zone.
+ * @param {(item: { id: string, data: any }) => void} [options.onHoverEnter] - Callback triggered when a dragged item enters this zone.
+ * @param {(item: { id: string, data: any }) => void} [options.onHoverLeave] - Callback triggered when a dragged item leaves this zone.
+ * @returns {{ dropRef: React.RefObject, isHover: boolean }}
  */
-export function useDrop({ id, onDrop }) {
+export function useDrop({ id, onDrop, onHoverEnter, onHoverLeave }) {
   const ref = useRef(null);
 
   // Access drag-and-drop state and actions
   const { activeItem, hoverId, updateHover, endDrag } = useDndStore();
 
-  const isOver = hoverId === id;
+  const isHover = hoverId === id;
 
   // Called when the pointer enters the drop zone
   const handlePointerEnter = useCallback(() => {
     if (activeItem?.id) {
       updateHover(id);
+      onHoverEnter?.(activeItem);
     }
-  }, [activeItem, id, updateHover]);
+  }, [activeItem, id, updateHover, onHoverEnter]);
 
   // Called when the pointer leaves the drop zone
   const handlePointerLeave = useCallback(() => {
+    if (activeItem?.id) {
+      onHoverLeave?.(activeItem);
+    }
     updateHover(null);
-  }, [updateHover]);
+  }, [activeItem, updateHover, onHoverLeave]);
 
   // Called when the pointer is released (drop)
   const handleDrop = useCallback((event) => {
@@ -63,5 +69,5 @@ export function useDrop({ id, onDrop }) {
     };
   }, [handlePointerEnter, handlePointerLeave, handleDrop, activeItem?.id, endDrag]);
 
-  return { dropRef: ref, isOver };
+  return { dropRef: ref, isHover };
 }

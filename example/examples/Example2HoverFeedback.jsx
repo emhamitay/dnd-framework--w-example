@@ -17,15 +17,15 @@ function App() {
         <div>📄 report.pdf</div>
       </Draggable>
 
-      {/* Pass a function as children → get isOver + ref */}
+      {/* Pass a function as children → get isHover + ref */}
       <Droppable
         id="inbox"
         onDrop={(item) => setDropped(item.id)}
       >
-        {(isOver, ref) => (
+        {(isHover, ref) => (
           <div
             ref={ref}
-            className={isOver ? 'zone zone--active' : 'zone'}
+            className={isHover ? 'zone zone--active' : 'zone'}
           >
             {dropped ? \`✓ \${dropped} landed!\` : '📥 Drop here'}
           </div>
@@ -40,14 +40,14 @@ const CODE_SIMPLE = `// Plain children — always works, but no hover feedback:
   <div className="zone">Drop here</div>
 </Droppable>`;
 
-const CODE_RENDER_PROP = `// Children as a function — you get isOver + ref:
+const CODE_RENDER_PROP = `// Children as a function — you get isHover + ref:
 <Droppable id="zone" onDrop={handleDrop}>
-  {(isOver, ref) => (
+  {(isHover, ref) => (
     <div
       ref={ref}
-      className={isOver ? 'zone zone--active' : 'zone'}
+      className={isHover ? 'zone zone--active' : 'zone'}
     >
-      {isOver ? 'Release!' : 'Drop here'}
+      {isHover ? 'Release!' : 'Drop here'}
     </div>
   )}
 </Droppable>`;
@@ -79,11 +79,11 @@ function Demo() {
           id="inbox"
           onDrop={(item) => setDropped(item.id)}
         >
-          {(isOver, ref) => (
+          {(isHover, ref) => (
             <div
               ref={ref}
               className={`w-44 min-h-32 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 transition-all duration-150 ${
-                isOver
+                isHover
                   ? "border-blue-400 bg-blue-50 scale-105"
                   : "border-slate-300 bg-slate-50"
               }`}
@@ -102,8 +102,8 @@ function Demo() {
               ) : (
                 <>
                   <span className="text-2xl">📥</span>
-                  <span className={`text-sm font-medium ${isOver ? "text-blue-600" : "text-slate-400"}`}>
-                    {isOver ? "Release!" : "Inbox"}
+                  <span className={`text-sm font-medium ${isHover ? "text-blue-600" : "text-slate-400"}`}>
+                    {isHover ? "Release!" : "Inbox"}
                   </span>
                 </>
               )}
@@ -130,7 +130,7 @@ export function Example2HoverFeedback({ CodeBlock }) {
           <p className="font-bold text-amber-900 mb-1 flex items-center gap-2">
             <span>💡</span> What is{" "}
             <code className="font-mono bg-amber-200 px-1.5 py-0.5 rounded text-xs">
-              {`{(isOver, ref) => (...)}`}
+              {`{(isHover, ref) => (...)}`}
             </code>
             ?
           </p>
@@ -147,7 +147,7 @@ export function Example2HoverFeedback({ CodeBlock }) {
               </p>
             </div>
             <div className="bg-white border border-amber-200 rounded-xl px-4 py-3">
-              <p className="font-mono text-sm font-bold text-amber-800 mb-1">isOver</p>
+              <p className="font-mono text-sm font-bold text-amber-800 mb-1">isHover</p>
               <p className="text-amber-900 text-sm leading-relaxed">
                 <code className="font-mono bg-amber-100 px-1 rounded text-xs">true</code> while
                 something hovers over this zone — use it to highlight the border, change the

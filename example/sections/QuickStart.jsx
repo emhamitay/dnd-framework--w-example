@@ -63,18 +63,18 @@ function LiveQuickDemo() {
         </Draggable>
 
         <Droppable id="qs-zone" onDrop={(item) => setDropped(item.id)}>
-          {(isOver, ref) => (
+          {(isHover, ref) => (
             <div
               ref={ref}
               className={`w-44 h-20 rounded-xl border-2 border-dashed flex items-center justify-center text-sm font-medium transition-all duration-150 ${
-                isOver
+                isHover
                   ? "border-indigo-400 bg-indigo-50 text-indigo-600 scale-105"
                   : dropped
                   ? "border-emerald-400 bg-emerald-50 text-emerald-600"
                   : "border-slate-300 text-slate-400"
               }`}
             >
-              {dropped ? "✓ Dropped!" : isOver ? "Release to drop" : "Drop zone"}
+              {dropped ? "✓ Dropped!" : isHover ? "Release to drop" : "Drop zone"}
             </div>
           )}
         </Droppable>

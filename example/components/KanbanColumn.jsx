@@ -30,10 +30,10 @@ export function KanbanColumn({ column }) {
       onSorted={onSorted}
       onDrop={onDrop}
     >
-      {({ isOver }) => (
+      {({ isHover }) => (
         <div
           className={`flex flex-col w-72 min-h-80 bg-slate-100 rounded-2xl p-4 gap-2 transition-all duration-150 ${
-            isOver ? `ring-2 ${style.ring} bg-slate-50` : ""
+            isHover ? `ring-2 ${style.ring} bg-slate-50` : ""
           }`}
         >
           {/* Column header */}
@@ -58,7 +58,7 @@ export function KanbanColumn({ column }) {
           {column.tasks.length === 0 && (
             <div
               className={`flex-1 flex items-center justify-center rounded-xl border-2 border-dashed text-sm min-h-24 transition-colors ${
-                isOver ? "border-blue-300 text-blue-400" : "border-slate-300 text-slate-400"
+                isHover ? "border-blue-300 text-blue-400" : "border-slate-300 text-slate-400"
               }`}
             >
               Drop here

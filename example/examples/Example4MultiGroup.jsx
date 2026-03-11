@@ -90,9 +90,9 @@ function Demo() {
         {/* Two drop zones */}
         <div className="grid grid-cols-2 gap-3">
           <Droppable id="approve-zone" onDrop={handleApprove}>
-            {(isOver, ref) => (
+            {(isHover, ref) => (
               <div ref={ref} className={`rounded-xl border-2 border-dashed p-3 text-center transition-all duration-150 min-h-20 flex flex-col items-center justify-center gap-1 ${
-                isOver ? "border-emerald-400 bg-emerald-50 scale-105" : "border-emerald-200 bg-emerald-50/50"
+                isHover ? "border-emerald-400 bg-emerald-50 scale-105" : "border-emerald-200 bg-emerald-50/50"
               }`}>
                 <span className="text-xl">✅</span>
                 <span className="text-xs font-semibold text-emerald-700">Approve</span>
@@ -102,9 +102,9 @@ function Demo() {
           </Droppable>
 
           <Droppable id="reject-zone" onDrop={handleReject}>
-            {(isOver, ref) => (
+            {(isHover, ref) => (
               <div ref={ref} className={`rounded-xl border-2 border-dashed p-3 text-center transition-all duration-150 min-h-20 flex flex-col items-center justify-center gap-1 ${
-                isOver ? "border-red-400 bg-red-50 scale-105" : "border-red-200 bg-red-50/50"
+                isHover ? "border-red-400 bg-red-50 scale-105" : "border-red-200 bg-red-50/50"
               }`}>
                 <span className="text-xl">❌</span>
                 <span className="text-xs font-semibold text-red-700">Reject</span>

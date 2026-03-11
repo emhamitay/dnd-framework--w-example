@@ -13,6 +13,8 @@ import { SortableContext } from "../context/SortableContext";
  * @param {string} props.id - Unique ID of the item.
  * @param {string} [props.sortId] - Optional override for sort group ID.
  * @param {"horizontal"|"vertical"} [props.direction="vertical"] - Drag direction.
+ * @param {(item: { id: string, data: any }) => void} [props.onHoverEnter] - Called when a dragged item enters this item.
+ * @param {(item: { id: string, data: any }) => void} [props.onHoverLeave] - Called when a dragged item leaves this item.
  * @param {React.ReactNode|function} props.children - Children node or render function.
  * @param {string} [props.className] - Optional CSS class names for the wrapper div.
  * @returns {React.ReactElement}
@@ -21,6 +23,8 @@ export function SortableDraggable({
   id,
   sortId: sortIdProp,
   direction = SORT_DIRECTION.Vertical,
+  onHoverEnter,
+  onHoverLeave,
   children, 
   className
 }) {
@@ -31,7 +35,7 @@ export function SortableDraggable({
     throw new Error("SortableDraggable must be used inside a SortableDropGroup or have a sortId prop.");
   }
 
-  const { ref: sortableRef, isOver, isActive } = useSortable({ id, direction });
+  const { ref: sortableRef, isHover, isActive } = useSortable({ id, direction, onHoverEnter, onHoverLeave });
   const { onMouseDown } = useDrag({ id, sortId });
 
   const setRef = (node) => {
@@ -40,7 +44,7 @@ export function SortableDraggable({
 
   const renderProps = {
     ref: setRef,
-    isOver: !!isOver,
+    isHover: !!isHover,
     isActive: !!isActive,
     onMouseDown,
   };
