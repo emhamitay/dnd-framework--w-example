@@ -6,7 +6,7 @@ import { useDndStore } from "../utils/dndStore";
 // Helper: simulate an active drag in the store
 function simulateDrag(id = "dragged-item") {
   useDndStore.setState({
-    activeItem: { id, type: "default", data: {}, pointerPosition: { x: 0, y: 0 } },
+    activeItem: { id, type: "default", data: {}, draggedElement: null, pointerPosition: { x: 0, y: 0 } },
     hoverId: null,
   });
 }

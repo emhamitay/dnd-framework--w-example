@@ -3,7 +3,7 @@ import { insertItem, switchArray, calculateNewIndex } from "./sortableUtils";
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
-function makeItems(count) {
+function makeItems(count: number) {
   return Array.from({ length: count }, (_, i) => ({ id: `item-${i}`, index: i }));
 }
 

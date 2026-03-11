@@ -1,33 +1,35 @@
-import React, { useContext } from "react";
+import { useContext, type ReactNode, type RefObject } from "react";
 import { useDrag } from "../hooks/useDrag";
-import { useSortable, SORT_DIRECTION } from "../hooks/useSortable";
+import { useSortable, SORT_DIRECTION, type SortDirection } from "../hooks/useSortable";
 import { SortableContext } from "../context/SortableContext";
+import type { DndItem } from "../types";
 
-/**
- * Combines sortable and draggable behavior for a single item.
- * Uses nearest sortId from context or accepts override via props.
- * Supports both children as JSX and render props pattern.
- *
- * @component
- * @param {Object} props
- * @param {string} props.id - Unique ID of the item.
- * @param {string} [props.sortId] - Optional override for sort group ID.
- * @param {"horizontal"|"vertical"} [props.direction="vertical"] - Drag direction.
- * @param {(item: { id: string, data: any }) => void} [props.onHoverEnter] - Called when a dragged item enters this item.
- * @param {(item: { id: string, data: any }) => void} [props.onHoverLeave] - Called when a dragged item leaves this item.
- * @param {React.ReactNode|function} props.children - Children node or render function.
- * @param {string} [props.className] - Optional CSS class names for the wrapper div.
- * @returns {React.ReactElement}
- */
+export interface SortableDraggableRenderProps {
+  ref: (node: HTMLElement | null) => void;
+  isHover: boolean;
+  isActive: boolean;
+  onPointerDown: (e: React.PointerEvent<Element>) => void;
+}
+
+export interface SortableDraggableProps {
+  id: string;
+  sortId?: string;
+  direction?: SortDirection;
+  onHoverEnter?: (item: DndItem) => void;
+  onHoverLeave?: (item: DndItem) => void;
+  children: ReactNode | ((renderProps: SortableDraggableRenderProps) => ReactNode);
+  className?: string;
+}
+
 export function SortableDraggable({
   id,
   sortId: sortIdProp,
   direction = SORT_DIRECTION.Vertical,
   onHoverEnter,
   onHoverLeave,
-  children, 
-  className
-}) {
+  children,
+  className,
+}: SortableDraggableProps) {
   const context = useContext(SortableContext);
   const sortId = sortIdProp ?? context?.sortId;
 
@@ -38,11 +40,11 @@ export function SortableDraggable({
   const { ref: sortableRef, isHover, isActive } = useSortable({ id, direction, onHoverEnter, onHoverLeave });
   const { onPointerDown } = useDrag({ id, sortId });
 
-  const setRef = (node) => {
+  const setRef = (node: HTMLElement | null) => {
     sortableRef.current = node;
   };
 
-  const renderProps = {
+  const renderProps: SortableDraggableRenderProps = {
     ref: setRef,
     isHover: !!isHover,
     isActive: !!isActive,
@@ -50,7 +52,7 @@ export function SortableDraggable({
   };
 
   if (typeof children === "function") {
-    return children(renderProps);
+    return <>{children(renderProps)}</>;
   }
 
   return (

@@ -1,9 +1,11 @@
 {
   "name": "@emhamitay/ghostdrop",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A lightweight, flexible drag-and-drop framework for React — supports free drag, droppable zones, and sortable lists out of the box.",
   "type": "module",
-  "main": "src/index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/emhamitay/ghostdrop.git"
@@ -24,10 +26,11 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run --config vitest.config.js",
-    "test:watch": "vitest --config vitest.config.js"
+    "test:watch": "vitest --config vitest.config.js",
+    "build:lib": "vite build --config vite.lib.config.js"
   },
   "files": [
-    "src",
+    "dist",
     "README.md"
   ],
   "peerDependencies": {
@@ -53,7 +56,9 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tailwindcss": "^4.1.11",
+    "typescript": "^5.9.3",
     "vite": "^7.0.3",
+    "vite-plugin-dts": "^4.5.4",
     "vitest": "^4.0.18"
   }
 }

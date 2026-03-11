@@ -1,3 +1,4 @@
+import React from "react";
 import { describe, it, expect, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useDrag } from "./useDrag";
@@ -27,12 +28,12 @@ describe("useDrag", () => {
     Object.defineProperty(event, "currentTarget", { value: fakeElement });
 
     act(() => {
-      result.current.onPointerDown(event);
+      result.current.onPointerDown(event as unknown as React.PointerEvent<Element>);
     });
 
     const { activeItem } = useDndStore.getState();
     expect(activeItem).not.toBeNull();
-    expect(activeItem.id).toBe("box-1");
+    expect(activeItem!.id).toBe("box-1");
   });
 
   it("does not start drag on right click (button !== 0)", () => {
@@ -42,7 +43,7 @@ describe("useDrag", () => {
     Object.defineProperty(event, "currentTarget", { value: document.createElement("div") });
 
     act(() => {
-      result.current.onPointerDown(event);
+      result.current.onPointerDown(event as unknown as React.PointerEvent<Element>);
     });
 
     expect(useDndStore.getState().activeItem).toBeNull();
@@ -56,7 +57,7 @@ describe("useDrag", () => {
     Object.defineProperty(event, "currentTarget", { value: document.createElement("div") });
 
     act(() => {
-      result.current.onPointerDown(event);
+      result.current.onPointerDown(event as unknown as React.PointerEvent<Element>);
     });
 
     expect(useDndStore.getState().activeItem).toBeNull();
@@ -72,12 +73,12 @@ describe("useDrag", () => {
     Object.defineProperty(event, "currentTarget", { value: fakeElement });
 
     act(() => {
-      result.current.onPointerDown(event);
+      result.current.onPointerDown(event as unknown as React.PointerEvent<Element>);
     });
 
     const { activeItem } = useDndStore.getState();
-    expect(activeItem.type).toBe("card");
-    expect(activeItem.data.color).toBe("red");
+    expect(activeItem!.type).toBe("card");
+    expect(activeItem!.data.color).toBe("red");
   });
 
   it("does not start drag when clicking an interactive element (button)", () => {
@@ -91,7 +92,7 @@ describe("useDrag", () => {
     Object.defineProperty(event, "currentTarget", { value: document.createElement("div") });
 
     act(() => {
-      result.current.onPointerDown(event);
+      result.current.onPointerDown(event as unknown as React.PointerEvent<Element>);
     });
 
     expect(useDndStore.getState().activeItem).toBeNull();

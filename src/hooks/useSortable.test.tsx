@@ -9,6 +9,7 @@ function simulateDrag(id = "dragged") {
       id,
       type: "default",
       data: {},
+      draggedElement: null,
       pointerPosition: { x: 50, y: 50 },
     },
     hoverId: null,
@@ -73,7 +74,7 @@ describe("useSortable — pointer-position-based isHover", () => {
   it("isHover becomes true when pointer is inside element bounding box", () => {
     const el = document.createElement("div");
     // Mock getBoundingClientRect to a 100×100 box at (0,0)
-    el.getBoundingClientRect = () => ({ left: 0, right: 100, top: 0, bottom: 100 });
+    el.getBoundingClientRect = () => ({ left: 0, right: 100, top: 0, bottom: 100, width: 100, height: 100, x: 0, y: 0, toJSON: () => ({}) } as DOMRect);
     document.body.appendChild(el);
 
     const { result } = renderHook(() => useSortable({ id: "s-item-1" }));
@@ -86,6 +87,7 @@ describe("useSortable — pointer-position-based isHover", () => {
           id: "dragged",
           type: "default",
           data: {},
+          draggedElement: null,
           pointerPosition: { x: 50, y: 50 },
         },
         hoverId: null,
@@ -93,7 +95,7 @@ describe("useSortable — pointer-position-based isHover", () => {
     });
 
     // rAF runs synchronously in jsdom — give it a tick
-    return new Promise((resolve) => {
+    return new Promise<void>((resolve) => {
       setTimeout(() => {
         expect(result.current.isHover).toBe(true);
         document.body.removeChild(el);
@@ -104,7 +106,7 @@ describe("useSortable — pointer-position-based isHover", () => {
 
   it("isHover is false when pointer is outside element bounding box", () => {
     const el = document.createElement("div");
-    el.getBoundingClientRect = () => ({ left: 200, right: 300, top: 200, bottom: 300 });
+    el.getBoundingClientRect = () => ({ left: 200, right: 300, top: 200, bottom: 300, width: 100, height: 100, x: 200, y: 200, toJSON: () => ({}) } as DOMRect);
     document.body.appendChild(el);
 
     const { result } = renderHook(() => useSortable({ id: "s-item-2" }));
@@ -116,13 +118,14 @@ describe("useSortable — pointer-position-based isHover", () => {
           id: "dragged",
           type: "default",
           data: {},
+          draggedElement: null,
           pointerPosition: { x: 50, y: 50 }, // outside the 200-300 box
         },
         hoverId: null,
       });
     });
 
-    return new Promise((resolve) => {
+    return new Promise<void>((resolve) => {
       setTimeout(() => {
         expect(result.current.isHover).toBe(false);
         document.body.removeChild(el);
