@@ -14,7 +14,7 @@ import { useDrag } from "../hooks/useDrag"; // נתיב לפי איך שאתה �
  * @returns {React.ReactElement|null} A cloned React element with drag behavior, or null if invalid.
  */
 export function Draggable({ id, type = "default", data, children, className  }) {
-  const { onMouseDown } = useDrag({ id, type, data });
+  const { onPointerDown } = useDrag({ id, type, data });
 
   // Merge child's existing className with the new one if any
   const childClassName = children.props.className || "";
@@ -26,7 +26,8 @@ export function Draggable({ id, type = "default", data, children, className  }) 
   }
 
   return React.cloneElement(children, {
-    onMouseDown,
+    onPointerDown,
+    style: { ...children.props.style, touchAction: "none" },
     className: combinedClassName || undefined,
   });
 }

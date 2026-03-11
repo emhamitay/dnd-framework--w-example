@@ -5,28 +5,29 @@ import mouseUpEventStore from "../utils/MouseUpEventStore";
 /**
  * Custom hook that enables drag behavior for an element.
  *
- * Initializes drag on mouse down, tracks pointer position,
- * and handles cleanup on mouse up. Integrates with the central
- * mouse-up event store to allow coordinated drop actions.
+ * Initializes drag on pointer down, tracks pointer position,
+ * and handles cleanup on pointer up. Uses Pointer Events API
+ * to support both mouse and touch input. Integrates with the
+ * central mouse-up event store to allow coordinated drop actions.
  *
  * @param {Object} options - Configuration for the draggable element.
  * @param {string} options.id - Unique identifier for the draggable item.
  * @param {string} options.sortId - Group ID used for sorting and event handling.
  * @param {string} [options.type="default"] - Optional type label for the item.
  * @param {any} [options.data] - Optional metadata passed during drag (e.g., index, group).
- * @returns {{ onMouseDown: (e: MouseEvent) => void }} Object containing an `onMouseDown` handler.
+ * @returns {{ onPointerDown: (e: PointerEvent) => void }} Object containing an `onPointerDown` handler.
  */
 export function useDrag({ id, sortId, type = "default", data }) {
   const startDrag = useDndStore((s) => s.startDrag);
   const endDrag = useDndStore((s) => s.endDrag);
 
   /**
-   * Initiates the drag behavior on mouse down.
-   * Attaches mousemove and mouseup listeners to track and complete the drag.
+   * Initiates the drag behavior on pointer down.
+   * Attaches pointermove and pointerup listeners to track and complete the drag.
    *
-   * @param {MouseEvent} event - The original mouse down event.
+   * @param {PointerEvent} event - The original pointer down event.
    */
-  const onMouseDown = useCallback(
+  const onPointerDown = useCallback(
     (event) => {
 // Prevent drag start if already handled or not left click
       if (event.defaultPrevented || event.button !== 0) {
@@ -55,7 +56,12 @@ export function useDrag({ id, sortId, type = "default", data }) {
         }
       );
 
-      const handleMouseMove = (e) => {
+      // Release implicit pointer capture so subsequent pointer events (pointerenter,
+      // pointerleave, pointerup) are dispatched to whichever element is under the
+      // pointer — required for touch/mobile support.
+      event.currentTarget.releasePointerCapture?.(event.pointerId);
+
+      const handlePointerMove = (e) => {
         useDndStore.setState((s) => ({
           activeItem: {
             ...s.activeItem,
@@ -64,22 +70,22 @@ export function useDrag({ id, sortId, type = "default", data }) {
         }));
       };
 
-      const handleMouseUp = () => {
+      const handlePointerUp = () => {
         mouseUpEventStore.runEvents(sortId);
         mouseUpEventStore.removeEvents(sortId);
         endDrag();
 
-        window.removeEventListener("mouseup", handleMouseUp);
-        window.removeEventListener("mousemove", handleMouseMove);
+        window.removeEventListener("pointerup", handlePointerUp);
+        window.removeEventListener("pointermove", handlePointerMove);
       };
 
-      window.addEventListener("mouseup", handleMouseUp);
-      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("pointerup", handlePointerUp);
+      window.addEventListener("pointermove", handlePointerMove);
     },
     [id, type, data, sortId, startDrag, endDrag]
   );
 
-  return { onMouseDown };
+  return { onPointerDown };
 }
 
 /**

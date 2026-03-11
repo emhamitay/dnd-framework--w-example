@@ -118,7 +118,7 @@ const API_SECTIONS = [
       { prop: "direction", type: "SORT_DIRECTION?", desc: "Layout direction for sorting. Vertical (default), Horizontal, or Grid." },
       { prop: "onHoverEnter", type: "(item) => void?", desc: "Called when a dragged item enters this sortable item." },
       { prop: "onHoverLeave", type: "(item) => void?", desc: "Called when a dragged item leaves this sortable item." },
-      { prop: "children", type: "node | (renderProps) => node", desc: "Static children get automatic grab cursor + opacity. Render function receives { ref, isHover, isActive, onMouseDown }." },
+      { prop: "children", type: "node | (renderProps) => node", desc: "Static children get automatic grab cursor + opacity. Render function receives { ref, isHover, isActive, onPointerDown }." },
       { prop: "className", type: "string?", desc: "CSS classes (when children is static)." },
     ],
     note: null,
@@ -174,7 +174,7 @@ const HOOKS = [
     title: "useDrag",
     desc: "The underlying primitive for drag behavior.",
     signature: "useDrag({ id, sortId?, type?, data? })",
-    returns: "{ onMouseDown }",
+    returns: "{ onPointerDown }",
     note: "Prefer using Draggable or SortableDraggable unless you need custom drag behavior.",
   },
   {

@@ -36,7 +36,7 @@ export function SortableDraggable({
   }
 
   const { ref: sortableRef, isHover, isActive } = useSortable({ id, direction, onHoverEnter, onHoverLeave });
-  const { onMouseDown } = useDrag({ id, sortId });
+  const { onPointerDown } = useDrag({ id, sortId });
 
   const setRef = (node) => {
     sortableRef.current = node;
@@ -46,7 +46,7 @@ export function SortableDraggable({
     ref: setRef,
     isHover: !!isHover,
     isActive: !!isActive,
-    onMouseDown,
+    onPointerDown,
   };
 
   if (typeof children === "function") {
@@ -56,9 +56,10 @@ export function SortableDraggable({
   return (
     <div
       ref={setRef}
-      onMouseDown={onMouseDown}
+      onPointerDown={onPointerDown}
       className={className}
       style={{
+        touchAction: "none",
         cursor: isActive ? "grabbing" : "grab",
         opacity: isActive ? 0.7 : 1,
         userSelect: "none",

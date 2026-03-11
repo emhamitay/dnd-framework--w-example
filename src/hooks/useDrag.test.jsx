@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useDrag } from "./useDrag";
 import { useDndStore } from "../utils/dndStore";
@@ -9,16 +9,16 @@ beforeEach(() => {
 });
 
 describe("useDrag", () => {
-  it("returns an onMouseDown handler", () => {
+  it("returns an onPointerDown handler", () => {
     const { result } = renderHook(() => useDrag({ id: "a", sortId: "group-1" }));
-    expect(typeof result.current.onMouseDown).toBe("function");
+    expect(typeof result.current.onPointerDown).toBe("function");
   });
 
-  it("starts drag when onMouseDown is called with left click", () => {
+  it("starts drag when onPointerDown is called with left click", () => {
     const { result } = renderHook(() => useDrag({ id: "box-1", sortId: "g1" }));
 
     const fakeElement = document.createElement("div");
-    const event = new MouseEvent("mousedown", {
+    const event = new PointerEvent("pointerdown", {
       button: 0,
       clientX: 100,
       clientY: 200,
@@ -27,7 +27,7 @@ describe("useDrag", () => {
     Object.defineProperty(event, "currentTarget", { value: fakeElement });
 
     act(() => {
-      result.current.onMouseDown(event);
+      result.current.onPointerDown(event);
     });
 
     const { activeItem } = useDndStore.getState();
@@ -38,11 +38,11 @@ describe("useDrag", () => {
   it("does not start drag on right click (button !== 0)", () => {
     const { result } = renderHook(() => useDrag({ id: "box-1", sortId: "g1" }));
 
-    const event = new MouseEvent("mousedown", { button: 2, bubbles: true });
+    const event = new PointerEvent("pointerdown", { button: 2, bubbles: true });
     Object.defineProperty(event, "currentTarget", { value: document.createElement("div") });
 
     act(() => {
-      result.current.onMouseDown(event);
+      result.current.onPointerDown(event);
     });
 
     expect(useDndStore.getState().activeItem).toBeNull();
@@ -51,12 +51,12 @@ describe("useDrag", () => {
   it("does not start drag if event.defaultPrevented", () => {
     const { result } = renderHook(() => useDrag({ id: "box-1", sortId: "g1" }));
 
-    const event = new MouseEvent("mousedown", { button: 0, bubbles: true, cancelable: true });
+    const event = new PointerEvent("pointerdown", { button: 0, bubbles: true, cancelable: true });
     event.preventDefault();
     Object.defineProperty(event, "currentTarget", { value: document.createElement("div") });
 
     act(() => {
-      result.current.onMouseDown(event);
+      result.current.onPointerDown(event);
     });
 
     expect(useDndStore.getState().activeItem).toBeNull();
@@ -68,11 +68,11 @@ describe("useDrag", () => {
     );
 
     const fakeElement = document.createElement("div");
-    const event = new MouseEvent("mousedown", { button: 0, clientX: 10, clientY: 20, bubbles: true });
+    const event = new PointerEvent("pointerdown", { button: 0, clientX: 10, clientY: 20, bubbles: true });
     Object.defineProperty(event, "currentTarget", { value: fakeElement });
 
     act(() => {
-      result.current.onMouseDown(event);
+      result.current.onPointerDown(event);
     });
 
     const { activeItem } = useDndStore.getState();
@@ -86,12 +86,12 @@ describe("useDrag", () => {
     const button = document.createElement("button");
     document.body.appendChild(button);
 
-    const event = new MouseEvent("mousedown", { button: 0, bubbles: true });
+    const event = new PointerEvent("pointerdown", { button: 0, bubbles: true });
     Object.defineProperty(event, "target", { value: button });
     Object.defineProperty(event, "currentTarget", { value: document.createElement("div") });
 
     act(() => {
-      result.current.onMouseDown(event);
+      result.current.onPointerDown(event);
     });
 
     expect(useDndStore.getState().activeItem).toBeNull();
