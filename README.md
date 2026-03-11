@@ -200,7 +200,7 @@ MIT © [emhamitay](https://github.com/emhamitay)
 Use `Droppable` to allow drops on a specific area.
 
 ```jsx
-import { Droppable } from "bhi-dnd";
+import { Droppable } from "@emhamitay/ghostdrop";
 
 <Droppable id="zone-1" onDrop={(item) => 
   console.log(`an item with id ${item.id} has dropped into 'zone-1'`);
@@ -216,7 +216,7 @@ import { Droppable } from "bhi-dnd";
 Wrap your sortable list with `SortableDropGroup`.
 
 ```jsx
-import { SortableDropGroup } from "bhi-dnd";
+import { SortableDropGroup } from "@emhamitay/ghostdrop";
 
 <SortableDropGroup
   id="list-1"
@@ -243,7 +243,7 @@ Use the `indexKey` prop if your items use a different property name (e.g., `sort
 `DroppableSortableWrapper` combines `Droppable` + `SortableDropGroup`.
 
 ```jsx
-import { DroppableSortableWrapper, SortableDraggable } from "bhi-dnd";
+import { DroppableSortableWrapper, SortableDraggable } from "@emhamitay/ghostdrop";
 
 <DroppableSortableWrapper
   id="list-1"
@@ -354,7 +354,7 @@ Props = `SortableDropGroup` + `Droppable`
 Enum-like object for sorting logic:
 
 ```js
-import { SORT_MODE } from 'bhi-dnd'
+import { SORT_MODE } from '@emhamitay/ghostdrop'
 
 SORT_MODE = {
   Switch: "switch", // swap dragged with hovered
@@ -369,7 +369,7 @@ SORT_MODE = {
 Enum-like object for layout direction:
 
 ```js
-import { SORT_DIRECTION } from 'bhi-dnd'
+import { SORT_DIRECTION } from '@emhamitay/ghostdrop'
 
 SORT_DIRECTION = {
   Vertical: "vertical",
