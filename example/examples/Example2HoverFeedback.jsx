@@ -4,7 +4,7 @@ import { GhostLayer } from "../../src/GhostLayer";
 import { Draggable } from "../../src/wrappers/Draggable";
 import { Droppable } from "../../src/wrappers/Droppable";
 
-const CODE = `import { DndProvider, GhostLayer, Draggable, Droppable } from 'ghostdrop';
+const CODE = `import { DndProvider, GhostLayer, Draggable, Droppable } from '@emhamitay/ghostdrop';
 
 function App() {
   const [dropped, setDropped] = useState(null);

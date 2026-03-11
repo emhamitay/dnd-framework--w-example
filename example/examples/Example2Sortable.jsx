@@ -7,7 +7,7 @@ import { SortableDraggable } from "../../src/wrappers/SortableDraggable";
 const CODE = `import {
   DndProvider, GhostLayer,
   SortableDropGroup, SortableDraggable
-} from 'ghostdrop';
+} from '@emhamitay/ghostdrop';
 
 function SortableList({ items, setItems }) {
   return (

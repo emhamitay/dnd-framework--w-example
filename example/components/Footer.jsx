@@ -21,7 +21,7 @@ export function Footer() {
             GitHub
           </a>
           <a
-            href="https://npmjs.com/package/ghostdrop"
+            href="https://npmjs.com/package/@emhamitay/ghostdrop"
             target="_blank"
             rel="noreferrer"
             className="hover:text-white transition-colors"

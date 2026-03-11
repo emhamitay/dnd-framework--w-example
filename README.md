@@ -3,7 +3,7 @@
 A lightweight, flexible drag-and-drop library built from scratch for React.  
 Free drag, droppable zones, and sortable lists — with a portal-based ghost layer that renders above everything.
 
-[![npm](https://img.shields.io/npm/v/ghostdrop?color=6366f1&label=npm)](https://www.npmjs.com/package/ghostdrop)
+[![npm](https://img.shields.io/npm/v/%40emhamitay%2Fghostdrop?color=6366f1&label=npm)](https://www.npmjs.com/package/@emhamitay/ghostdrop)
 [![license](https://img.shields.io/badge/license-MIT-emerald)](LICENSE)
 [![live demo](https://img.shields.io/badge/demo-live-blue)](https://emhamitay.github.io/ghostdrop)
 
@@ -34,7 +34,7 @@ Interactive examples: basic drop → hover feedback → sortable list → drag i
 ## Install
 
 ```bash
-npm install ghostdrop
+npm install @emhamitay/ghostdrop
 ```
 
 ---
@@ -42,7 +42,7 @@ npm install ghostdrop
 ## Quick Start
 
 ```jsx
-import { DndProvider, GhostLayer, Draggable, Droppable } from 'ghostdrop';
+import { DndProvider, GhostLayer, Draggable, Droppable } from '@emhamitay/ghostdrop';
 
 function App() {
   const [dropped, setDropped] = useState(null);
@@ -85,7 +85,7 @@ Pass a function as `Droppable`'s children to get `isOver` and `ref`:
 ### Sortable list
 
 ```jsx
-import { DndProvider, GhostLayer, SortableDropGroup, SortableDraggable } from 'ghostdrop';
+import { DndProvider, GhostLayer, SortableDropGroup, SortableDraggable } from '@emhamitay/ghostdrop';
 
 const INITIAL = [
   { id: 'a', label: 'Alpha', index: 0 },
@@ -139,7 +139,7 @@ function SortableList() {
 ### Enums
 
 ```js
-import { SORT_MODE, SORT_DIRECTION } from 'ghostdrop';
+import { SORT_MODE, SORT_DIRECTION } from '@emhamitay/ghostdrop';
 
 SORT_MODE.Switch   // swap positions
 SORT_MODE.Insert   // shift items (default)
