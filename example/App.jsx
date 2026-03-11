@@ -1,28 +1,25 @@
-import useUserStore from "./store/useUsersStore";
-import Group from "./components/Group";
-import { DndProvider } from "../src/context/DndProvider";
-import { GhostLayer } from "../src/GhostLayer";
+import { Navbar } from "./components/Navbar";
+import { Footer } from "./components/Footer";
+import { Hero } from "./sections/Hero";
+import { Features } from "./sections/Features";
+import { HowItWorks } from "./sections/HowItWorks";
+import { QuickStart } from "./sections/QuickStart";
+import { Examples } from "./sections/Examples";
+import { ApiDocs } from "./sections/ApiDocs";
 
-function App() {
-  const groups = useUserStore((s) => s.groups);
-  const addGroup = useUserStore((s) => s.addGroup);
+export default function App() {
   return (
-    <DndProvider>
-      <GhostLayer />
-      <div className="flex flex-col w-screen h-screen items-center gap-3">
-        <div className="flex flex-row justify-center items-center m-5 w-screen h-10">
-          <button onClick={()=>{
-            addGroup();
-          }}>Add Group</button>
-        </div>
-        <div className="flex flex-row flex-1 justify-center items-center gap-3">
-          { groups.map((g) => (
-            <Group key={g.id} group={g} />
-          ))}
-        </div>
-      </div>
-    </DndProvider>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-1">
+        <Hero />
+        <Features />
+        <HowItWorks />
+        <QuickStart />
+        <Examples />
+        <ApiDocs />
+      </main>
+      <Footer />
+    </div>
   );
 }
-
-export default App;
