@@ -4,8 +4,19 @@
   "description": "A lightweight, flexible drag-and-drop framework for React — supports free drag, droppable zones, and sortable lists out of the box.",
   "type": "module",
   "main": "src/index.js",
-  "repository": { "type": "git", "url": "https://github.com/emhamitay/ghostdrop" },
-  "keywords": ["react", "drag-and-drop", "dnd", "sortable", "droppable", "draggable", "ghostdrop"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emhamitay/ghostdrop.git"
+  },
+  "keywords": [
+    "react",
+    "drag-and-drop",
+    "dnd",
+    "sortable",
+    "droppable",
+    "draggable",
+    "ghostdrop"
+  ],
   "license": "MIT",
   "scripts": {
     "dev": "vite",
@@ -13,16 +24,20 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.11",
-    "framer-motion": "^12.23.1",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "tailwindcss": "^4.1.11",
     "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
+    "@tailwindcss/vite": "^4.1.11",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react-swc": "^3.10.2",
@@ -30,6 +45,9 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.11",
     "vite": "^7.0.3"
   }
 }
