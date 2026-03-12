@@ -12,6 +12,7 @@ type Item = { id: string; label: string; index: number };
 
 function SortableList({ items, setItems }: { items: Item[]; setItems: (items: Item[]) => void }) {
   return (
+    // Items make space as you drag — set layoutAnimation="none" to disable
     <SortableDropGroup items={items} onSorted={setItems}>
       {items.map((item) => (
         <SortableDraggable key={item.id} id={item.id}>

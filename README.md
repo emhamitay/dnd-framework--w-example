@@ -112,6 +112,8 @@ const [toast, setToast] = useState<string | null>(null);
 
 ### Sortable list
 
+As you drag, surrounding items slide to make space — you always see exactly where the item will land. Drop in empty space to cancel. Press **Escape** to cancel at any time.
+
 ```tsx
 import { useState } from 'react';
 import { DndProvider, GhostLayer, SortableDropGroup, SortableDraggable } from '@emhamitay/ghostdrop';
@@ -130,6 +132,8 @@ function SortableList() {
   return (
     <DndProvider>
       <GhostLayer />
+      {/* Items slide to make space as you drag (default). */}
+      {/* Use layoutAnimation="none" to disable and get classic instant-reorder behavior. */}
       <SortableDropGroup items={items} onSorted={setItems}>
         {items.map((item) => (
           <SortableDraggable key={item.id} id={item.id}>
@@ -140,6 +144,27 @@ function SortableList() {
     </DndProvider>
   );
 }
+```
+
+#### Horizontal and grid layouts
+
+```tsx
+{/* Horizontal list */}
+<SortableDropGroup items={items} onSorted={setItems} direction={SORT_DIRECTION.Horizontal}>
+  {items.map((item) => (
+    <SortableDraggable key={item.id} id={item.id}>
+      <div className="chip">{item.label}</div>
+    </SortableDraggable>
+  ))}
+</SortableDropGroup>
+```
+
+#### Opt out of animation (classic mode)
+
+```tsx
+<SortableDropGroup items={items} onSorted={setItems} layoutAnimation="none">
+  {/* items reorder instantly on drop — no shift animation */}
+</SortableDropGroup>
 ```
 
 ---
@@ -154,7 +179,7 @@ function SortableList() {
 | `<GhostLayer />` | Renders the drag preview via a React portal on `document.body`. |
 | `<Draggable id type? data?>` | Makes any element draggable. |
 | `<Droppable id onDrop? onHoverEnter? onHoverLeave? children>` | Defines a drop zone. Children can be JSX or `(isHover, ref) => JSX`. |
-| `<SortableDropGroup items onSorted mode? indexKey?>` | A group of sortable items. |
+| `<SortableDropGroup items onSorted direction? layoutAnimation? mode? indexKey?>` | A group of sortable items. Items animate to make space by default. |
 | `<SortableDraggable id>` | Draggable item inside a `SortableDropGroup`. |
 | `<DroppableSortableWrapper>` | Combines `Droppable` + `SortableDropGroup` in one component. |
 
@@ -201,6 +226,9 @@ SORT_MODE.Insert   // shift items (default)
 SORT_DIRECTION.Vertical    // default
 SORT_DIRECTION.Horizontal
 SORT_DIRECTION.Grid
+
+LAYOUT_ANIMATION.Shift  // items slide to make space (default)
+LAYOUT_ANIMATION.None   // instant reorder, no animation
 ```
 
 ---
@@ -229,7 +257,9 @@ Droppable / useDrop
 
 SortableDropGroup / SortableDraggable
 └── tracks insertion index during drag
+└── animates surrounding items via CSS transform (shift mode)
 └── calls onSorted(newArray) on drop
+└── dropping in empty space cancels the sort (hoverId cleared on leave)
 ```
 
 The key design: **drop detection happens at the `Droppable` level, not at the `Draggable` level**. Each drop zone registers its own handler into a central store. When the user releases, only the handler for the zone under the cursor fires. This makes cross-group interactions and dynamic callbacks straightforward.

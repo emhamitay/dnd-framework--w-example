@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from "react";
+import { useDndStore } from "../utils/dndStore";
 
 interface DndProviderProps {
   children: ReactNode;
@@ -19,6 +20,16 @@ export function DndProvider({ children }: DndProviderProps) {
       `;
       document.head.appendChild(style);
     }
+  }, []);
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape" && useDndStore.getState().activeItem) {
+        useDndStore.getState().endDrag();
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
   return <>{children}</>;

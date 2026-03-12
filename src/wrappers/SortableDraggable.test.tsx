@@ -9,7 +9,15 @@ import { useDndStore } from "../utils/dndStore";
 /** Wraps children in a SortableContext so SortableDraggable can read sortId. */
 function withContext(sortId: string, children: React.ReactNode) {
   return (
-    <SortableContext.Provider value={{ sortId }}>
+    <SortableContext.Provider
+      value={{
+        sortId,
+        direction: "vertical",
+        layoutAnimation: "shift",
+        items: [],
+        visualTo: null,
+      }}
+    >
       {children}
     </SortableContext.Provider>
   );
@@ -76,10 +84,11 @@ describe("SortableDraggable — static children", () => {
     );
     const wrapper = screen.getByTestId("child").parentElement!;
     expect(wrapper.style.cursor).toBe("grab");
-    expect(wrapper.style.opacity).toBe("1");
+    // In shift mode (default), non-active items have no explicit opacity set
+    expect(wrapper.style.opacity).toBe("");
   });
 
-  it("switches to grabbing cursor and 0.7 opacity while being dragged", () => {
+  it("switches to grabbing cursor and opacity 0 while being dragged (shift mode)", () => {
     render(
       <SortableDraggable id="item-2" sortId="group-1">
         <div data-testid="child">item</div>
@@ -100,6 +109,42 @@ describe("SortableDraggable — static children", () => {
     });
 
     const wrapper = screen.getByTestId("child").parentElement!;
+    expect(wrapper.style.cursor).toBe("grabbing");
+    // shift mode: dragged item is fully invisible (ghost layer shows it)
+    expect(wrapper.style.opacity).toBe("0");
+  });
+
+  it("uses opacity 0.7 while dragged when layoutAnimation is none", () => {
+    render(
+      <SortableContext.Provider
+        value={{
+          sortId: "group-none",
+          direction: "vertical",
+          layoutAnimation: "none",
+          items: [{ id: "item-3" }],
+          visualTo: null,
+        }}
+      >
+        <SortableDraggable id="item-3">
+          <div data-testid="child-none">item</div>
+        </SortableDraggable>
+      </SortableContext.Provider>
+    );
+
+    act(() => {
+      useDndStore.setState({
+        activeItem: {
+          id: "item-3",
+          type: "default",
+          data: {},
+          draggedElement: null,
+          pointerPosition: { x: 0, y: 0 },
+        },
+        hoverId: null,
+      });
+    });
+
+    const wrapper = screen.getByTestId("child-none").parentElement!;
     expect(wrapper.style.cursor).toBe("grabbing");
     expect(wrapper.style.opacity).toBe("0.7");
   });
@@ -131,6 +176,7 @@ describe("SortableDraggable — render-prop children", () => {
     expect(typeof props.onPointerDown).toBe("function");
     expect(typeof props.isHover).toBe("boolean");
     expect(typeof props.isActive).toBe("boolean");
+    expect(typeof props.style).toBe("object");
   });
 
   it("passes isActive=true in renderProps while this item is dragged", () => {

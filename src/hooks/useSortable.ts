@@ -10,6 +10,13 @@ export const SORT_DIRECTION = {
 
 export type SortDirection = (typeof SORT_DIRECTION)[keyof typeof SORT_DIRECTION];
 
+export const LAYOUT_ANIMATION = {
+  Shift: "shift",
+  None: "none",
+} as const;
+
+export type LayoutAnimationValue = (typeof LAYOUT_ANIMATION)[keyof typeof LAYOUT_ANIMATION];
+
 export interface UseSortableOptions {
   id: string;
   direction?: SortDirection;
@@ -58,6 +65,8 @@ export function useSortable({
           onHoverEnter?.(activeItem);
         } else {
           onHoverLeave?.(activeItem);
+          // Clear the global hoverId when we leave, so dropping in empty space does nothing
+          if (hoverId === id) updateHover(null);
         }
       }
 

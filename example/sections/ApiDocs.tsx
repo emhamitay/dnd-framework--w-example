@@ -105,12 +105,14 @@ const API_SECTIONS = [
     props: [
       { prop: "items", type: "object[]", desc: "Array of items to sort. Each must have a unique id property." },
       { prop: "onSorted", type: "(newItems: T[]) => void", desc: "Called with the reordered array after a sort completes." },
+      { prop: "direction", type: "SORT_DIRECTION?", desc: "Layout direction for the whole group. Vertical (default), Horizontal, or Grid. Sets the shift axis for the animation." },
+      { prop: "layoutAnimation", type: '"shift" | "none"?', desc: 'Controls the sort animation. "shift" (default): items slide to make space as you drag. "none": classic instant reorder on drop, no movement animation.' },
       { prop: "indexKey", type: "string?", desc: 'Property name used for sort order. Default: "index". Change if your items use a different field.' },
       { prop: "mode", type: "SORT_MODE?", desc: "Insert (default): shift items into position. Switch: swap dragged with hovered." },
       { prop: "children", type: "ReactNode", desc: "Should contain SortableDraggable components." },
       { prop: "className", type: "string?", desc: "CSS classes for the wrapper div." },
     ],
-    note: null,
+    note: "Dropping in empty space (outside all items) cancels the sort — items return to their original positions. Press Escape at any time to cancel a drag in progress.",
   },
   {
     id: "api-sortable-draggable",
@@ -122,7 +124,7 @@ const API_SECTIONS = [
       { prop: "direction", type: "SORT_DIRECTION?", desc: "Layout direction for sorting. Vertical (default), Horizontal, or Grid." },
       { prop: "onHoverEnter", type: "(item: DndItem) => void?", desc: "Called when a dragged item enters this sortable item." },
       { prop: "onHoverLeave", type: "(item: DndItem) => void?", desc: "Called when a dragged item leaves this sortable item." },
-      { prop: "children", type: "node | (renderProps) => node", desc: "Static children get automatic grab cursor + opacity. Render function receives { ref, isHover, isActive, onPointerDown }." },
+      { prop: "children", type: "node | (renderProps) => node", desc: "Static children get automatic grab cursor and shift animation. Render function receives { ref, isHover, isActive, onPointerDown, style } — spread style onto your element to get the shift transform." },
       { prop: "className", type: "string?", desc: "CSS classes (when children is static)." },
     ],
     note: null,
@@ -146,6 +148,8 @@ const API_SECTIONS = [
       },
       { prop: "indexKey", type: "string?", desc: 'Sort order key. Default: "index".' },
       { prop: "mode", type: "SORT_MODE?", desc: "Insert or Switch." },
+      { prop: "direction", type: "SORT_DIRECTION?", desc: "Layout direction for the group. Vertical (default), Horizontal, or Grid." },
+      { prop: "layoutAnimation", type: "LAYOUT_ANIMATION?", desc: "Shift (default): items slide to make space. None: instant reorder on drop." },
       { prop: "className", type: "string?", desc: "CSS classes for the outer wrapper." },
     ],
     note: null,
@@ -168,6 +172,14 @@ const ENUMS = [
       { name: "SORT_DIRECTION.Vertical", desc: "Default. Detects up/down movement for vertical lists." },
       { name: "SORT_DIRECTION.Horizontal", desc: "Detects left/right movement for horizontal lists." },
       { name: "SORT_DIRECTION.Grid", desc: "Detects both axes for grid layouts." },
+    ],
+  },
+  {
+    id: "api-layout-animation",
+    title: "LAYOUT_ANIMATION",
+    values: [
+      { name: "LAYOUT_ANIMATION.Shift", desc: "Default. Items slide to make space as you drag, showing exactly where the item will land." },
+      { name: "LAYOUT_ANIMATION.None", desc: "No animation. Items reorder instantly on drop. Use when you want full control over visual feedback." },
     ],
   },
 ];

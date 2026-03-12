@@ -10,6 +10,9 @@ interface DndState {
   activeItem: ActiveItem | null;
   hoverId: string | null;
   consoleLog: boolean;
+  draggedFromIndex: number | null;
+  draggedSize: { width: number; height: number } | null;
+  draggedGap: number;
   setConsoleLog: (val: boolean) => void;
   startDrag: (
     id: string,
@@ -19,12 +22,20 @@ interface DndState {
   ) => void;
   updateHover: (id: string | null) => void;
   endDrag: () => void;
+  setDraggedInfo: (info: {
+    fromIndex: number;
+    size: { width: number; height: number };
+    gap: number;
+  }) => void;
 }
 
 export const useDndStore = create<DndState>((set, get) => ({
   activeItem: null,
   hoverId: null,
   consoleLog: false,
+  draggedFromIndex: null,
+  draggedSize: null,
+  draggedGap: 0,
 
   setConsoleLog: (val) => {
     set({ consoleLog: val });
@@ -59,8 +70,12 @@ export const useDndStore = create<DndState>((set, get) => ({
     if (typeof document !== "undefined") {
       document.body.classList.remove("dnd-noselect");
     }
-    set({ activeItem: null, hoverId: null });
+    set({ activeItem: null, hoverId: null, draggedFromIndex: null, draggedSize: null, draggedGap: 0 });
     log(get, "endDrag");
+  },
+
+  setDraggedInfo: ({ fromIndex, size, gap }) => {
+    set({ draggedFromIndex: fromIndex, draggedSize: size, draggedGap: gap });
   },
 }));
 
