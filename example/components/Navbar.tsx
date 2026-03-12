@@ -7,6 +7,9 @@ export function Navbar() {
           <span className="font-black text-slate-900 text-lg tracking-tight">
             Ghost<span className="text-indigo-600"> Drop</span>
           </span>
+          <span className="text-xs font-semibold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">
+            v2.0.0
+          </span>
         </div>
         <div className="flex items-center gap-4">
           <a href="#how-it-works" className="text-sm text-slate-600 hover:text-slate-900 transition-colors font-medium hidden sm:block">

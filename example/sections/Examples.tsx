@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { CodeBlock as CodeBlockBase } from "../components/CodeBlock";
 import { Example1BasicDrop } from "../examples/Example1BasicDrop";
 import { Example2HoverFeedback } from "../examples/Example2HoverFeedback";
 import { Example2Sortable } from "../examples/Example2Sortable";
 import { Example3Mixed } from "../examples/Example3Mixed";
 import { Example4MultiGroup } from "../examples/Example4MultiGroup";
+import { Example5Toast } from "../examples/Example5Toast";
 
 const TABS = [
   {
@@ -36,36 +38,17 @@ const TABS = [
     sublabel: "Independent zones, different callbacks",
     Component: Example4MultiGroup,
   },
+  {
+    id: "ex6",
+    label: "6 · Hover callbacks",
+    sublabel: "onHoverEnter/Leave for side-effects",
+    Component: Example5Toast,
+  },
 ];
 
-function CodeBlock({ code, label }) {
-  const [copied, setCopied] = useState(false);
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-  return (
-    <div className="bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 h-full flex flex-col">
-      <div className="flex items-center justify-between px-5 py-3 border-b border-slate-800 flex-shrink-0">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-500/70" />
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
-          <span className="ml-3 text-xs text-slate-500 font-medium">{label}</span>
-        </div>
-        <button
-          onClick={handleCopy}
-          className="text-xs text-slate-400 hover:text-white transition-colors font-medium cursor-pointer px-2 py-1 rounded hover:bg-slate-800"
-        >
-          {copied ? "✓ Copied!" : "Copy"}
-        </button>
-      </div>
-      <pre className="p-5 text-sm text-slate-300 overflow-auto font-mono leading-relaxed flex-1">
-        <code>{code}</code>
-      </pre>
-    </div>
-  );
+// CodeBlock passed to each example — stretched to fill the column height
+function CodeBlock({ code, label }: { code: string; label: string }) {
+  return <CodeBlockBase code={code} label={label} stretch />;
 }
 
 export function Examples() {
@@ -73,8 +56,8 @@ export function Examples() {
   const active = TABS.find((t) => t.id === activeTab);
 
   return (
-    <section id="examples" className="bg-slate-50 py-20 px-6">
-      <div className="max-w-6xl mx-auto">
+    <section id="examples" className="bg-slate-50 py-20 px-4">
+      <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl font-bold text-slate-900 text-center mb-3">
           Examples
         </h2>
@@ -83,19 +66,19 @@ export function Examples() {
         </p>
 
         {/* Tab bar */}
-        <div className="flex flex-wrap gap-3 mb-8">
+        <div className="grid grid-cols-3 gap-3 mb-8">
           {TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col text-left px-4 py-3 rounded-xl border transition-all text-sm font-semibold cursor-pointer ${
+              className={`flex flex-col items-center text-center w-full px-4 py-3 rounded-xl border transition-all text-sm font-semibold cursor-pointer ${
                 activeTab === tab.id
                   ? "bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-200"
                   : "bg-white border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600"
               }`}
             >
-              <span>{tab.label}</span>
-              <span className={`text-xs font-normal mt-0.5 ${activeTab === tab.id ? "text-indigo-200" : "text-slate-400"}`}>
+              <span>{tab.label} </span>
+              <span className={`text-xs font-normal mt-1.5 ${activeTab === tab.id ? "text-indigo-300" : "text-slate-500"}`}>
                 {tab.sublabel}
               </span>
             </button>
@@ -103,7 +86,7 @@ export function Examples() {
         </div>
 
         {/* Active example */}
-        <active.Component CodeBlock={CodeBlock} />
+        {active && <active.Component CodeBlock={CodeBlock} />}
       </div>
     </section>
   );

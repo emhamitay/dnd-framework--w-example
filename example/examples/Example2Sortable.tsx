@@ -1,15 +1,16 @@
 import { useState } from "react";
+import type { ReactNode } from "react";
 import { DndProvider } from "../../src/context/DndProvider";
 import { GhostLayer } from "../../src/GhostLayer";
 import { SortableDropGroup } from "../../src/wrappers/SortableDropGroup";
 import { SortableDraggable } from "../../src/wrappers/SortableDraggable";
 
-const CODE = `import {
-  DndProvider, GhostLayer,
-  SortableDropGroup, SortableDraggable
-} from '@emhamitay/ghostdrop';
+const CODE = `import { useState } from 'react';
+import { DndProvider, GhostLayer, SortableDropGroup, SortableDraggable } from '@emhamitay/ghostdrop';
 
-function SortableList({ items, setItems }) {
+type Item = { id: string; label: string; index: number };
+
+function SortableList({ items, setItems }: { items: Item[]; setItems: (items: Item[]) => void }) {
   return (
     <SortableDropGroup items={items} onSorted={setItems}>
       {items.map((item) => (
@@ -59,13 +60,13 @@ function Demo() {
   );
 }
 
-export function Example2Sortable({ CodeBlock }) {
+export function Example2Sortable({ CodeBlock }: { CodeBlock: (props: { code: string; label: string }) => ReactNode }) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-6 items-start">
       <div className="bg-white rounded-2xl border border-slate-200 p-6">
         <Demo />
       </div>
-      <CodeBlock code={CODE} label="Example2.jsx" />
+      <CodeBlock code={CODE} label="Example2.tsx" />
     </div>
   );
 }

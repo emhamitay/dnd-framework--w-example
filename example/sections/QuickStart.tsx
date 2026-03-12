@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { CodeBlock } from "../components/CodeBlock";
+import type { DndItem } from "../../src/index";
 import { DndProvider } from "../../src/context/DndProvider";
 import { GhostLayer } from "../../src/GhostLayer";
 import { Draggable } from "../../src/wrappers/Draggable";
@@ -6,7 +8,9 @@ import { Droppable } from "../../src/wrappers/Droppable";
 
 const INSTALL_CODE = `npm install @emhamitay/ghostdrop`;
 
-const USAGE_CODE = `import { DndProvider, GhostLayer, Draggable, Droppable } from '@emhamitay/ghostdrop';
+const USAGE_CODE = `import { useState } from 'react';
+import type { DndItem } from '@emhamitay/ghostdrop';
+import { DndProvider, GhostLayer, Draggable, Droppable } from '@emhamitay/ghostdrop';
 
 function App() {
   return (
@@ -17,40 +21,15 @@ function App() {
         <div>Drag me</div>
       </Draggable>
 
-      <Droppable id="zone-1" onDrop={(item) => console.log('dropped:', item.id)}>
+      <Droppable id="zone-1" onDrop={(item: DndItem) => console.log('dropped:', item.id)}>
         <div>Drop here</div>
       </Droppable>
     </DndProvider>
   );
 }`;
 
-function CodeBlock({ code, label }) {
-  const [copied, setCopied] = useState(false);
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-  return (
-    <div className="bg-slate-950 rounded-2xl overflow-hidden border border-slate-800">
-      <div className="flex items-center justify-between px-5 py-3 border-b border-slate-800">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-500/70" />
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
-          <span className="ml-3 text-xs text-slate-500 font-medium">{label}</span>
-        </div>
-        <button onClick={handleCopy} className="text-xs text-slate-400 hover:text-white transition-colors font-medium cursor-pointer px-2 py-1 rounded hover:bg-slate-800">
-          {copied ? "✓ Copied!" : "Copy"}
-        </button>
-      </div>
-      <pre className="p-5 text-sm text-slate-300 overflow-x-auto font-mono leading-relaxed"><code>{code}</code></pre>
-    </div>
-  );
-}
-
 function LiveQuickDemo() {
-  const [dropped, setDropped] = useState(null);
+  const [dropped, setDropped] = useState<string | null>(null);
 
   return (
     <DndProvider>
@@ -62,7 +41,7 @@ function LiveQuickDemo() {
           </div>
         </Draggable>
 
-        <Droppable id="qs-zone" onDrop={(item) => setDropped(item.id)}>
+        <Droppable id="qs-zone" onDrop={(item: DndItem) => setDropped(item.id)}>
           {(isHover, ref) => (
             <div
               ref={ref}
@@ -103,7 +82,7 @@ export function QuickStart() {
 
           <div>
             <p className="text-slate-700 font-bold mb-3 text-sm tracking-widest uppercase">2 · Add to your app</p>
-            <CodeBlock code={USAGE_CODE} label="App.jsx" />
+            <CodeBlock code={USAGE_CODE} label="App.tsx" />
           </div>
 
           <div>

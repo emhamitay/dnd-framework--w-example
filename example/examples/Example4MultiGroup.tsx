@@ -4,25 +4,25 @@ import { GhostLayer } from "../../src/GhostLayer";
 import { Draggable } from "../../src/wrappers/Draggable";
 import { Droppable } from "../../src/wrappers/Droppable";
 
-const CODE = `// Two drop zones, completely different callbacks.
-// Each zone does its own thing — fully independent.
+const CODE = `import type { DndItem } from '@emhamitay/ghostdrop';
+import { DndProvider, GhostLayer, Draggable, Droppable } from '@emhamitay/ghostdrop';
+
+// Two completely independent drop zones.
+// Each has its own callback — the framework doesn't care what you do in onDrop.
 
 <Droppable
   id="approve-zone"
-  onDrop={(item) => approvePR(item.id)}   // calls your API
+  onDrop={(item: DndItem) => approvePR(item.id)}
 >
   ✅ Approve
 </Droppable>
 
 <Droppable
   id="reject-zone"
-  onDrop={(item) => rejectPR(item.id)}    // different action
+  onDrop={(item: DndItem) => rejectPR(item.id)}
 >
   ❌ Reject
-</Droppable>
-
-// The framework doesn't care what you do in onDrop.
-// It just tells you what was dropped and where.`;
+</Droppable>`;
 
 const PULL_REQUESTS = [
   { id: "pr-42", title: "Add dark mode", author: "alice" },
@@ -40,14 +40,16 @@ function Badge({ children, color }) {
 
 function Demo() {
   const [prs, setPrs] = useState(PULL_REQUESTS);
-  const [approved, setApproved] = useState([]);
-  const [rejected, setRejected] = useState([]);
-  const [log, setLog] = useState([]);
+  const [approved, setApproved] = useState<typeof PULL_REQUESTS>([]);
+  const [rejected, setRejected] = useState<typeof PULL_REQUESTS>([]);
+  const [log, setLog] = useState<{ msg: string; color: string; id: number }[]>([]);
 
-  const addLog = (msg, color) =>
+  const reset = () => { setPrs(PULL_REQUESTS); setApproved([]); setRejected([]); setLog([]); };
+
+  const addLog = (msg: string, color: string) =>
     setLog((l) => [{ msg, color, id: Date.now() }, ...l].slice(0, 4));
 
-  const handleApprove = (item) => {
+  const handleApprove = (item: { id: string }) => {
     const pr = prs.find((p) => p.id === item.id);
     if (!pr) return;
     setPrs((p) => p.filter((x) => x.id !== item.id));
@@ -55,7 +57,7 @@ function Demo() {
     addLog(`✅ Approved "${pr.title}"`, "text-emerald-600");
   };
 
-  const handleReject = (item) => {
+  const handleReject = (item: { id: string }) => {
     const pr = prs.find((p) => p.id === item.id);
     if (!pr) return;
     setPrs((p) => p.filter((x) => x.id !== item.id));
@@ -90,29 +92,32 @@ function Demo() {
         {/* Two drop zones */}
         <div className="grid grid-cols-2 gap-3">
           <Droppable id="approve-zone" onDrop={handleApprove}>
-            {(isHover, ref) => (
-              <div ref={ref} className={`rounded-xl border-2 border-dashed p-3 text-center transition-all duration-150 min-h-20 flex flex-col items-center justify-center gap-1 ${
-                isHover ? "border-emerald-400 bg-emerald-50 scale-105" : "border-emerald-200 bg-emerald-50/50"
-              }`}>
-                <span className="text-xl">✅</span>
-                <span className="text-xs font-semibold text-emerald-700">Approve</span>
-                {approved.length > 0 && <Badge color="bg-emerald-200 text-emerald-700">{approved.length}</Badge>}
-              </div>
-            )}
+            <div className="rounded-xl border-2 border-dashed border-emerald-200 bg-emerald-50/50 p-3 text-center min-h-20 flex flex-col items-center justify-center gap-1">
+              <span className="text-xl">✅</span>
+              <span className="text-xs font-semibold text-emerald-700">Approve</span>
+              {approved.length > 0 && <Badge color="bg-emerald-200 text-emerald-700">{approved.length}</Badge>}
+            </div>
           </Droppable>
 
           <Droppable id="reject-zone" onDrop={handleReject}>
-            {(isHover, ref) => (
-              <div ref={ref} className={`rounded-xl border-2 border-dashed p-3 text-center transition-all duration-150 min-h-20 flex flex-col items-center justify-center gap-1 ${
-                isHover ? "border-red-400 bg-red-50 scale-105" : "border-red-200 bg-red-50/50"
-              }`}>
-                <span className="text-xl">❌</span>
-                <span className="text-xs font-semibold text-red-700">Reject</span>
-                {rejected.length > 0 && <Badge color="bg-red-200 text-red-700">{rejected.length}</Badge>}
-              </div>
-            )}
+            <div className="rounded-xl border-2 border-dashed border-red-200 bg-red-50/50 p-3 text-center min-h-20 flex flex-col items-center justify-center gap-1">
+              <span className="text-xl">❌</span>
+              <span className="text-xs font-semibold text-red-700">Reject</span>
+              {rejected.length > 0 && <Badge color="bg-red-200 text-red-700">{rejected.length}</Badge>}
+            </div>
           </Droppable>
         </div>
+
+        {(approved.length > 0 || rejected.length > 0) && (
+          <div className="flex justify-end">
+            <button
+              onClick={reset}
+              className="text-xs text-slate-400 hover:text-slate-700 border border-slate-200 hover:border-slate-400 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+            >
+              ↺ Reset
+            </button>
+          </div>
+        )}
 
         {/* Callback log */}
         {log.length > 0 && (
@@ -131,11 +136,11 @@ function Demo() {
 
 export function Example4MultiGroup({ CodeBlock }) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-6 items-start">
       <div className="bg-white rounded-2xl border border-slate-200 p-6">
         <Demo />
       </div>
-      <CodeBlock code={CODE} label="Example4.jsx" />
+      <CodeBlock code={CODE} label="Example4.tsx" />
     </div>
   );
 }

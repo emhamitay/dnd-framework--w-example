@@ -5,21 +5,30 @@ import { Draggable } from "../../src/wrappers/Draggable";
 import { DroppableSortableWrapper } from "../../src/wrappers/DroppableSortableWrapper";
 import { SortableDraggable } from "../../src/wrappers/SortableDraggable";
 
-const CODE = `// Mix Droppable + Sortable in one component:
-// DroppableSortableWrapper handles both.
-// Items inside can be reordered AND new items
-// can be dropped in from outside.
+const CODE = `import type { DndItem } from '@emhamitay/ghostdrop';
+import {
+  DndProvider, GhostLayer, Draggable,
+  DroppableSortableWrapper, SortableDraggable
+} from '@emhamitay/ghostdrop';
+
+// DroppableSortableWrapper: accepts drops from outside
+// AND allows internal reordering — two behaviours, one component.
 
 <DroppableSortableWrapper
+  id="team-zone"
   items={teamItems}
   onSorted={setTeamItems}
-  onDrop={(item) => addToTeam(item.id)}
+  onDrop={(item: DndItem) => addToTeam(item.id)}
 >
   {({ isHover }) => (
     <div className={isHover ? "column column--over" : "column"}>
       {teamItems.map((m) => (
         <SortableDraggable key={m.id} id={m.id}>
-          <div className="card">{m.name}</div>
+          <div className="card">
+            {m.name}
+            {/* × button moves the person back to the bench */}
+            <button onClick={() => removeFromTeam(m.id)}>×</button>
+          </div>
         </SortableDraggable>
       ))}
     </div>
@@ -65,11 +74,19 @@ function Demo() {
   const [bench, setBench] = useState(BENCH);
   const [team, setTeam] = useState(INITIAL_TEAM);
 
-  const addToTeam = (personId) => {
+  const addToTeam = (personId: string) => {
     const person = bench.find((p) => p.id === personId);
     if (!person || team.some((t) => t.id === personId)) return;
     setBench((b) => b.filter((p) => p.id !== personId));
     setTeam((t) => [...t, { ...person, index: t.length }]);
+  };
+
+  const removeFromTeam = (personId: string) => {
+    const person = team.find((p) => p.id === personId);
+    if (!person) return;
+    setTeam((t) => t.filter((p) => p.id !== personId).map((p, i) => ({ ...p, index: i })));
+    const { index: _idx, ...benchPerson } = person;
+    setBench((b) => [...b, benchPerson]);
   };
 
   return (
@@ -100,7 +117,16 @@ function Demo() {
               }`}>
                 {team.map((p) => (
                   <SortableDraggable key={p.id} id={p.id}>
-                    <PersonCard person={p} />
+                    <div className="bg-white border border-slate-200 rounded-lg px-3 py-2.5 shadow-sm select-none flex items-center justify-between gap-3 hover:shadow-md transition-shadow">
+                      <PersonCard person={p} />
+                      <button
+                        onClick={() => removeFromTeam(p.id)}
+                        className="text-slate-300 hover:text-slate-600 text-sm font-bold leading-none cursor-pointer flex-shrink-0"
+                        title="Remove from team"
+                      >
+                        ×
+                      </button>
+                    </div>
                   </SortableDraggable>
                 ))}
                 {team.length === 0 && (
@@ -118,11 +144,11 @@ function Demo() {
 
 export function Example3Mixed({ CodeBlock }) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-6 items-start">
       <div className="bg-white rounded-2xl border border-slate-200 p-6">
         <Demo />
       </div>
-      <CodeBlock code={CODE} label="Example3.jsx" />
+      <CodeBlock code={CODE} label="Example3.tsx" />
     </div>
   );
 }

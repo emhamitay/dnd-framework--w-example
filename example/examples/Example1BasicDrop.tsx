@@ -1,13 +1,17 @@
 import { useState } from "react";
+import type { ReactNode } from "react";
 import { DndProvider } from "../../src/context/DndProvider";
 import { GhostLayer } from "../../src/GhostLayer";
 import { Draggable } from "../../src/wrappers/Draggable";
 import { Droppable } from "../../src/wrappers/Droppable";
+import type { DndItem } from "../../src/index";
 
-const CODE = `import { DndProvider, GhostLayer, Draggable, Droppable } from '@emhamitay/ghostdrop';
+const CODE = `import { useState } from 'react';
+import type { DndItem } from '@emhamitay/ghostdrop';
+import { DndProvider, GhostLayer, Draggable, Droppable } from '@emhamitay/ghostdrop';
 
 function App() {
-  const [dropped, setDropped] = useState(null);
+  const [dropped, setDropped] = useState<string | null>(null);
 
   return (
     <DndProvider>
@@ -19,7 +23,7 @@ function App() {
 
       <Droppable
         id="inbox"
-        onDrop={(item) => setDropped(item.id)}
+        onDrop={(item: DndItem) => setDropped(item.id)}
       >
         <div className="drop-zone">
           {dropped ? \`✓ \${dropped} landed!\` : '📥 Drop here'}
@@ -30,7 +34,7 @@ function App() {
 }`;
 
 function Demo() {
-  const [dropped, setDropped] = useState(null);
+  const [dropped, setDropped] = useState<string | null>(null);
   const [files] = useState([
     { id: "report.pdf", icon: "📄" },
     { id: "photo.png", icon: "🖼️" },
@@ -54,7 +58,7 @@ function Demo() {
 
         <Droppable
           id="inbox"
-          onDrop={(item) => setDropped(item.id)}
+          onDrop={(item: DndItem) => setDropped(item.id)}
         >
           <div className="w-44 min-h-32 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center gap-2 transition-colors">
             {dropped ? (
@@ -81,13 +85,13 @@ function Demo() {
   );
 }
 
-export function Example1BasicDrop({ CodeBlock }) {
+export function Example1BasicDrop({ CodeBlock }: { CodeBlock: (props: { code: string; label: string }) => ReactNode }) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-6 items-start">
       <div className="bg-white rounded-2xl border border-slate-200 p-6">
         <Demo />
       </div>
-      <CodeBlock code={CODE} label="Example1.jsx" />
+      <CodeBlock code={CODE} label="Example1.tsx" />
     </div>
   );
 }

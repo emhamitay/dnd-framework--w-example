@@ -1,4 +1,8 @@
-function PropTable({ rows }) {
+import type { ReactNode } from "react";
+
+type PropRow = { prop: string; type: string; desc: ReactNode };
+
+function PropTable({ rows }: { rows: PropRow[] }) {
   return (
     <div className="overflow-x-auto rounded-xl border border-slate-200">
       <table className="w-full text-sm">
@@ -10,7 +14,7 @@ function PropTable({ rows }) {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, i) => (
+          {rows.map((row: PropRow, i: number) => (
             <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-slate-50/50"}>
               <td className="px-4 py-2.5 font-mono text-indigo-600 font-semibold align-top text-xs">{row.prop}</td>
               <td className="px-4 py-2.5 font-mono text-slate-500 align-top text-xs">{row.type}</td>
@@ -23,7 +27,7 @@ function PropTable({ rows }) {
   );
 }
 
-function Section({ id, title, badge, children }) {
+function Section({ id, title, badge, children }: { id: string; title: string; badge?: string; children: ReactNode }) {
   return (
     <div id={id} className="scroll-mt-20">
       <div className="flex items-center gap-3 mb-4">
@@ -39,7 +43,7 @@ function Section({ id, title, badge, children }) {
   );
 }
 
-function InlineCode({ children }) {
+function InlineCode({ children }: { children: ReactNode }) {
   return <code className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>;
 }
 
@@ -81,9 +85,9 @@ const API_SECTIONS = [
     desc: "Defines a drop zone. Calls onDrop when an item is released over it. Supports render props for access to isHover state.",
     props: [
       { prop: "id", type: "string", desc: "Unique ID for this drop zone." },
-      { prop: "onDrop", type: "(item) => void?", desc: "Called when an item is dropped. item = { id, data }." },
-      { prop: "onHoverEnter", type: "(item) => void?", desc: "Called when a dragged item enters this zone. Use instead of (or alongside) isHover for side-effects like toasts or previews." },
-      { prop: "onHoverLeave", type: "(item) => void?", desc: "Called when a dragged item leaves this zone." },
+      { prop: "onDrop", type: "(item: DndItem) => void?", desc: "Called when an item is dropped. item = { id, type, data }." },
+      { prop: "onHoverEnter", type: "(item: DndItem) => void?", desc: "Called when a dragged item enters this zone. Use instead of (or alongside) isHover for side-effects like toasts or previews." },
+      { prop: "onHoverLeave", type: "(item: DndItem) => void?", desc: "Called when a dragged item leaves this zone." },
       {
         prop: "children",
         type: "node | (isHover, ref) => node",
@@ -91,7 +95,7 @@ const API_SECTIONS = [
       },
       { prop: "className", type: "string?", desc: "CSS classes for the wrapper div (only when children is static, not a render function)." },
     ],
-    note: "item object: { id: string, data: Record<string, unknown> }",
+    note: "import type { DndItem } from '@emhamitay/ghostdrop'; — item: { id: string; type: string; data: Record<string, unknown> }",
   },
   {
     id: "api-sortable-drop-group",
@@ -100,7 +104,7 @@ const API_SECTIONS = [
     desc: "Wraps a list of sortable items. Handles reordering logic and provides sort context to children. Use alongside SortableDraggable.",
     props: [
       { prop: "items", type: "object[]", desc: "Array of items to sort. Each must have a unique id property." },
-      { prop: "onSorted", type: "(newItems) => void", desc: "Called with the reordered array after a sort completes." },
+      { prop: "onSorted", type: "(newItems: T[]) => void", desc: "Called with the reordered array after a sort completes." },
       { prop: "indexKey", type: "string?", desc: 'Property name used for sort order. Default: "index". Change if your items use a different field.' },
       { prop: "mode", type: "SORT_MODE?", desc: "Insert (default): shift items into position. Switch: swap dragged with hovered." },
       { prop: "children", type: "ReactNode", desc: "Should contain SortableDraggable components." },
@@ -116,8 +120,8 @@ const API_SECTIONS = [
     props: [
       { prop: "id", type: "string", desc: "Unique ID matching the item in the SortableDropGroup items array." },
       { prop: "direction", type: "SORT_DIRECTION?", desc: "Layout direction for sorting. Vertical (default), Horizontal, or Grid." },
-      { prop: "onHoverEnter", type: "(item) => void?", desc: "Called when a dragged item enters this sortable item." },
-      { prop: "onHoverLeave", type: "(item) => void?", desc: "Called when a dragged item leaves this sortable item." },
+      { prop: "onHoverEnter", type: "(item: DndItem) => void?", desc: "Called when a dragged item enters this sortable item." },
+      { prop: "onHoverLeave", type: "(item: DndItem) => void?", desc: "Called when a dragged item leaves this sortable item." },
       { prop: "children", type: "node | (renderProps) => node", desc: "Static children get automatic grab cursor + opacity. Render function receives { ref, isHover, isActive, onPointerDown }." },
       { prop: "className", type: "string?", desc: "CSS classes (when children is static)." },
     ],
@@ -132,9 +136,9 @@ const API_SECTIONS = [
       { prop: "id", type: "string?", desc: "Drop zone ID (for external drops)." },
       { prop: "items", type: "object[]", desc: "Items to sort." },
       { prop: "onSorted", type: "(newItems) => void", desc: "Called when internal sort completes." },
-      { prop: "onDrop", type: "(item) => void?", desc: "Called when an external item is dropped in." },
-      { prop: "onHoverEnter", type: "(item) => void?", desc: "Called when a dragged item enters this zone." },
-      { prop: "onHoverLeave", type: "(item) => void?", desc: "Called when a dragged item leaves this zone." },
+      { prop: "onDrop", type: "(item: DndItem) => void?", desc: "Called when an external item is dropped in." },
+      { prop: "onHoverEnter", type: "(item: DndItem) => void?", desc: "Called when a dragged item enters this zone." },
+      { prop: "onHoverLeave", type: "(item: DndItem) => void?", desc: "Called when a dragged item leaves this zone." },
       {
         prop: "children",
         type: "node | ({ isHover }) => node",
@@ -213,22 +217,43 @@ export function ApiDocs() {
         </p>
 
         {/* Nav */}
-        <div className="flex flex-wrap gap-2 mb-14 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-          {API_SECTIONS.map((s) => (
-            <a key={s.id} href={`#${s.id}`} className="text-sm text-indigo-600 hover:text-indigo-800 font-mono font-semibold hover:underline">
-              {s.title}
-            </a>
-          ))}
-          {ENUMS.map((e) => (
-            <a key={e.id} href={`#${e.id}`} className="text-sm text-indigo-600 hover:text-indigo-800 font-mono font-semibold hover:underline">
-              {e.title}
-            </a>
-          ))}
-          {HOOKS.map((h) => (
-            <a key={h.id} href={`#${h.id}`} className="text-sm text-indigo-600 hover:text-indigo-800 font-mono font-semibold hover:underline">
-              {h.title}
-            </a>
-          ))}
+        <div className="grid grid-cols-3 gap-px mb-14 rounded-2xl overflow-hidden border border-slate-200 bg-slate-200">
+          {/* Components */}
+          <div className="bg-white px-5 py-4">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-3">Components</p>
+            <div className="flex flex-col gap-1.5">
+              {API_SECTIONS.map((s) => (
+                <a key={s.id} href={`#${s.id}`}
+                  className="font-mono text-sm text-slate-700 hover:text-indigo-600 transition-colors leading-none">
+                  {s.title}
+                </a>
+              ))}
+            </div>
+          </div>
+          {/* Enums */}
+          <div className="bg-white px-5 py-4">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-3">Enums</p>
+            <div className="flex flex-col gap-1.5">
+              {ENUMS.map((e) => (
+                <a key={e.id} href={`#${e.id}`}
+                  className="font-mono text-sm text-slate-700 hover:text-amber-600 transition-colors leading-none">
+                  {e.title}
+                </a>
+              ))}
+            </div>
+          </div>
+          {/* Hooks */}
+          <div className="bg-white px-5 py-4">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-3">Hooks</p>
+            <div className="flex flex-col gap-1.5">
+              {HOOKS.map((h) => (
+                <a key={h.id} href={`#${h.id}`}
+                  className="font-mono text-sm text-slate-700 hover:text-emerald-600 transition-colors leading-none">
+                  {h.title}
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="space-y-14">
@@ -247,6 +272,27 @@ export function ApiDocs() {
                   )}
                 </Section>
               ))}
+            </div>
+          </div>
+
+          {/* Enums */}
+          <div>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-8 border-b border-slate-100 pb-3">TypeScript Types</h3>
+            <div className="space-y-4">
+              <div className="bg-slate-950 rounded-xl p-5 font-mono text-sm text-slate-300 leading-relaxed">
+                <p className="text-slate-500 text-xs mb-3">// Import types alongside components</p>
+                <p><span className="text-blue-400">import type</span> {"{ DndItem }"} <span className="text-blue-400">from</span> <span className="text-emerald-400">'@emhamitay/ghostdrop'</span>;</p>
+                <br />
+                <p className="text-slate-500 text-xs mb-1">// The shape passed to onDrop, onHoverEnter, onHoverLeave</p>
+                <p><span className="text-blue-400">type</span> <span className="text-yellow-300">DndItem</span> = {"{"}</p>
+                <p className="pl-4">id<span className="text-slate-500">:</span> <span className="text-yellow-300">string</span>;</p>
+                <p className="pl-4">type<span className="text-slate-500">:</span> <span className="text-yellow-300">string</span>;</p>
+                <p className="pl-4">data<span className="text-slate-500">:</span> <span className="text-yellow-300">Record</span>{"<string, unknown>"};</p>
+                <p>{"}"}</p>
+              </div>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                All callback props (<InlineCode>onDrop</InlineCode>, <InlineCode>onHoverEnter</InlineCode>, <InlineCode>onHoverLeave</InlineCode>) receive a <InlineCode>DndItem</InlineCode>. Cast <InlineCode>item.data</InlineCode> to your own type for full type safety.
+              </p>
             </div>
           </div>
 

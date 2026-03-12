@@ -16,10 +16,11 @@ Most drag-and-drop libraries render the drag preview inside the DOM tree — whi
 Ghost Drop renders the drag preview through a **React portal directly on `document.body`**. It always floats above everything, regardless of your layout. That was the original reason this library was built from scratch.
 
 Other design decisions:
-- **No native HTML5 drag events** — uses `mousedown` / `mousemove` / `mouseup` for full control over the drag lifecycle
+- **No native HTML5 drag events** — uses Pointer Events for full control over the drag lifecycle and **mobile support**
 - **Zustand** for shared drag state — minimal, no Context re-render overhead on every mouse move
 - **Dynamic callbacks** — `onDrop` and `onSorted` are read at call time, so closures always have fresh state without needing `useCallback`
 - **Isolated groups** — multiple `DndProvider` trees on the same page don't interfere with each other
+- **Written in TypeScript** — full type definitions included
 
 ---
 
@@ -27,7 +28,7 @@ Other design decisions:
 
 **[emhamitay.github.io/ghostdrop](https://emhamitay.github.io/ghostdrop)**
 
-Interactive examples: basic drop → hover feedback → sortable list → drag into sortable → multiple independent groups.
+Interactive examples: basic drop → hover feedback → sortable list → drag into sortable → multiple independent groups → hover callbacks.
 
 ---
 
@@ -41,11 +42,13 @@ npm install @emhamitay/ghostdrop
 
 ## Quick Start
 
-```jsx
+```tsx
+import { useState } from 'react';
+import type { DndItem } from '@emhamitay/ghostdrop';
 import { DndProvider, GhostLayer, Draggable, Droppable } from '@emhamitay/ghostdrop';
 
 function App() {
-  const [dropped, setDropped] = useState(null);
+  const [dropped, setDropped] = useState<string | null>(null);
 
   return (
     <DndProvider>
@@ -55,7 +58,7 @@ function App() {
         <div className="card">📄 Drag me</div>
       </Draggable>
 
-      <Droppable id="zone" onDrop={(item) => setDropped(item.id)}>
+      <Droppable id="zone" onDrop={(item: DndItem) => setDropped(item.id)}>
         <div className="drop-zone">
           {dropped ? `✓ ${dropped} landed!` : 'Drop here'}
         </div>
@@ -65,29 +68,57 @@ function App() {
 }
 ```
 
-### With hover feedback
+### With hover feedback (render prop)
 
-Pass a function as `Droppable`'s children to get `isOver` and `ref`:
+Pass a function as `Droppable`'s children to get `isHover` and `ref`:
 
-```jsx
-<Droppable id="zone" onDrop={handleDrop}>
-  {(isOver, ref) => (
+```tsx
+import type { DndItem } from '@emhamitay/ghostdrop';
+
+<Droppable id="zone" onDrop={(item: DndItem) => handleDrop(item)}>
+  {(isHover, ref) => (
     <div
       ref={ref}
-      style={{ background: isOver ? '#dbeafe' : '#f8fafc' }}
+      style={{ background: isHover ? '#dbeafe' : '#f8fafc' }}
     >
-      {isOver ? 'Release!' : 'Drop here'}
+      {isHover ? 'Release!' : 'Drop here'}
     </div>
   )}
 </Droppable>
 ```
 
+### With hover callbacks (side-effects outside the zone)
+
+Use `onHoverEnter` / `onHoverLeave` when you need to trigger effects *outside* the drop zone — toasts, previews, analytics:
+
+```tsx
+import { useState } from 'react';
+import type { DndItem } from '@emhamitay/ghostdrop';
+
+const [toast, setToast] = useState<string | null>(null);
+
+<Droppable
+  id="archive"
+  onHoverEnter={(item: DndItem) => setToast(`Archive "${item.data.subject}"?`)}
+  onHoverLeave={() => setToast(null)}
+  onDrop={(item: DndItem) => { doArchive(item); setToast(null); }}
+>
+  <div className="zone">📦 Archive</div>
+</Droppable>
+
+{/* Toast lives outside the zone — works because it's driven by state */}
+{toast && <div className="toast">{toast}</div>}
+```
+
 ### Sortable list
 
-```jsx
+```tsx
+import { useState } from 'react';
 import { DndProvider, GhostLayer, SortableDropGroup, SortableDraggable } from '@emhamitay/ghostdrop';
 
-const INITIAL = [
+type Item = { id: string; label: string; index: number };
+
+const INITIAL: Item[] = [
   { id: 'a', label: 'Alpha', index: 0 },
   { id: 'b', label: 'Beta', index: 1 },
   { id: 'c', label: 'Gamma', index: 2 },
@@ -122,23 +153,46 @@ function SortableList() {
 | `<DndProvider>` | Required root. Initializes the Zustand store. |
 | `<GhostLayer />` | Renders the drag preview via a React portal on `document.body`. |
 | `<Draggable id type? data?>` | Makes any element draggable. |
-| `<Droppable id onDrop children>` | Defines a drop zone. Children can be JSX or `(isOver, ref) => JSX`. |
+| `<Droppable id onDrop? onHoverEnter? onHoverLeave? children>` | Defines a drop zone. Children can be JSX or `(isHover, ref) => JSX`. |
 | `<SortableDropGroup items onSorted mode? indexKey?>` | A group of sortable items. |
 | `<SortableDraggable id>` | Draggable item inside a `SortableDropGroup`. |
 | `<DroppableSortableWrapper>` | Combines `Droppable` + `SortableDropGroup` in one component. |
 
-### Hooks (for custom implementations)
+### `Droppable` Props
+
+| Prop | Type | Description |
+|---|---|---|
+| `id` | `string` | Unique ID for this drop zone. |
+| `onDrop` | `(item: DndItem) => void` | Called when an item is released over this zone. |
+| `onHoverEnter` | `(item: DndItem) => void` | Called when a dragged item enters this zone. |
+| `onHoverLeave` | `(item: DndItem) => void` | Called when a dragged item leaves this zone. |
+| `children` | `ReactNode \| (isHover: boolean, ref) => ReactNode` | Static children or render prop for hover styling. |
+
+### TypeScript Types
+
+```ts
+import type { DndItem } from '@emhamitay/ghostdrop';
+
+// Passed to all callbacks
+type DndItem = {
+  id: string;
+  type: string;
+  data: Record<string, unknown>;
+};
+```
+
+### Hooks (low-level)
 
 | Hook | Returns |
 |---|---|
-| `useDrag({ id, type?, data? })` | `{ onMouseDown }` |
-| `useDrop({ id, onDrop })` | `{ dropRef, isOver }` |
-| `useSortable({ id, direction? })` | `{ ref, isOver, isActive }` |
-| `useSortableDrop({ items, onSorted, indexKey?, mode? })` | `sortId` (string) |
+| `useDrag({ id, type?, data? })` | `{ onPointerDown }` |
+| `useDrop({ id, onDrop?, onHoverEnter?, onHoverLeave? })` | `{ dropRef, isHover }` |
+| `useSortable({ id, direction? })` | `{ ref, isHover, isActive }` |
+| `useSortableDrop({ items, onSorted, indexKey?, mode? })` | `sortId: string` |
 
 ### Enums
 
-```js
+```ts
 import { SORT_MODE, SORT_DIRECTION } from '@emhamitay/ghostdrop';
 
 SORT_MODE.Switch   // swap positions
@@ -164,227 +218,24 @@ GhostLayer
 └── React portal → document.body ← renders above ALL DOM stacking contexts
 
 Draggable / useDrag
-└── mousedown → startDrag()
-└── mousemove → updates pointer position in store
-└── mouseup   → fires registered drop handlers → endDrag()
+└── pointerdown → startDrag()
+└── pointermove → updates pointer position in store
+└── pointerup   → fires registered drop handlers → endDrag()
 
 Droppable / useDrop
-└── pointerenter → updateHover(id)
-└── pointerleave → updateHover(null)
-└── registers mouseup handler → calls onDrop if cursor is inside zone
+└── pointerenter → updateHover(id) → fires onHoverEnter
+└── pointerleave → updateHover(null) → fires onHoverLeave
+└── registers pointerup handler → calls onDrop if cursor is inside zone
 
 SortableDropGroup / SortableDraggable
 └── tracks insertion index during drag
 └── calls onSorted(newArray) on drop
 ```
 
-The key design: **drop detection happens at the `Droppable` level, not at the `Draggable` level**. Each drop zone registers its own mouseup handler into a central store. When the user releases, only the handler for the zone under the cursor fires. This makes cross-group interactions and dynamic callbacks straightforward.
-
----
-
-## Roadmap
-
-- [ ] Touch / mobile support
-- [ ] TypeScript types
-- [ ] `onHover(item)` callback — fires while a specific item is over a zone
-- [ ] Keyboard accessibility
+The key design: **drop detection happens at the `Droppable` level, not at the `Draggable` level**. Each drop zone registers its own handler into a central store. When the user releases, only the handler for the zone under the cursor fires. This makes cross-group interactions and dynamic callbacks straightforward.
 
 ---
 
 ## License
 
 MIT © [emhamitay](https://github.com/emhamitay)
-
-### 4. Define a Drop Zone
-
-Use `Droppable` to allow drops on a specific area.
-
-```jsx
-import { Droppable } from "@emhamitay/ghostdrop";
-
-<Droppable id="zone-1" onDrop={(item) => 
-  console.log(`an item with id ${item.id} has dropped into 'zone-1'`);
-  }>
-  <div>Drop items here</div>
-</Droppable>
-```
-
----
-
-### 5. Add Sorting (Step 1)
-
-Wrap your sortable list with `SortableDropGroup`.
-
-```jsx
-import { SortableDropGroup } from "@emhamitay/ghostdrop";
-
-<SortableDropGroup
-  id="list-1"
-  items={[
-    { id: "item-1", index: 0 }, 
-    { id: "item-2", index: 1 }
-    ]}
-  onSorted={(newOrder) => console.log(newOrder)}
->
-  {items.map((id) => (
-    <SortableDraggable key={id} id={id}>
-      <div>{id}</div>
-    </SortableDraggable>
-  ))}
-</SortableDropGroup>
-
-```
-Use the `indexKey` prop if your items use a different property name (e.g., `sortIndex`) instead of index.
-
----
-
-### 6. Or Use Combined Wrapper
-
-`DroppableSortableWrapper` combines `Droppable` + `SortableDropGroup`.
-
-```jsx
-import { DroppableSortableWrapper, SortableDraggable } from "@emhamitay/ghostdrop";
-
-<DroppableSortableWrapper
-  id="list-1"
-  items={[
-    { id: "item-1", index: 0 }, 
-    { id: "item-2", index: 1 }
-    ]}
-  onSorted={(newOrder) => console.log(newOrder)}
-  onDrop={(item) => 
-  console.log(`an item with id ${item.id} has dropped into 'list-1'`);
-  }>
->
-  {items.map((id) => (
-    <SortableDraggable key={id} id={id}>
-      <div>{id}</div>
-    </SortableDraggable>
-  ))}
-</DroppableSortableWrapper>
-```
-
----
-
-## 📚 API Reference
-
-### `DndContext`
-
-Initializes drag-and-drop. Wrap your entire app.
-
-### `GhostLayer`
-
-Optional visual feedback layer. Renders a copy of the dragged item.
-
----
-
-### `Draggable`
-
-| Prop | Type   | Description                      |
-| ---- | ------ | -------------------------------- |
-| `id` | string | Unique ID for the draggable item |
-
----
-
-### `Droppable`
-
-| Prop       | Type              | Description                                                                      |
-| ---------- | ----------------- | -------------------------------------------------------------------------------- |
-| `id`       | string            | Unique ID of the drop zone                                                       |
-| `onDrop`   | (item\[]) => void | A callback function to be called once an item was dropped in the droppable zone  |
-| `children` | node              | Zone contents                                                                    |
-
-#### `item` explanation:
-
-item: { id: string, type: string, data: any } 
-
----
-
-#### `item.type` explanation:
-
-item.type - Optional string to identify the kind of item being dragged. Useful for validating or filtering drops.
-
----
-
-### `SortableDropGroup`
-
-| Prop       | Type                                     | Description                                                 |
-| ---------- | ---------------------------------------- | ----------------------------------------------------------- |
-| `id`       | string                                   | ID of the droppable group                                   |
-| `items`    | object\[]                                | Array of items with `id` property                           |
-| `onSorted` | (sortedItemsArray\[]) => void            | Called when sort completes with new order                   |
-| `mode`     | `SORT_MODE` enum                         | Sorting strategy: Insert (default) or Switch                |
-| `indexKey` | string (optional)                        | Name of the property used for sort order, e.g., `sortIndex` |
-
-#### `indexKey` explanation:
-
-If you're working with objects instead of plain strings, you can provide an `indexKey` to define where the new index should be written. Example:
-
-```jsx
-<SortableDropGroup
-  items={[{ id: "1", sortIndex: 0 }, { id: "2", sortIndex: 1 }]}
-  indexKey="sortIndex"
-  onSorted={(newItems) => setItems(newItems)}
-/>
-```
-
----
-
-### `SortableDraggable`
-
-Use inside a `SortableDropGroup` or `DroppableSortableWrapper`
-
-| Prop        | Type                        | Description                                              |
-| ----------- | --------------------------- | -------------------------------------------------------- |
-| `id`        | string                      | Unique ID                                                |
-| `direction` | `SORT_DIRECTION` enum       | Layout direction: vertical (default), horizontal or grid |
-
----
-
-### `DroppableSortableWrapper`
-
-Combines a droppable area with sorting capabilities.
-
-Props = `SortableDropGroup` + `Droppable`
-
----
-
-### `SORT_MODE`
-
-Enum-like object for sorting logic:
-
-```js
-import { SORT_MODE } from '@emhamitay/ghostdrop'
-
-SORT_MODE = {
-  Switch: "switch", // swap dragged with hovered
-  Insert: "insert", // insert into new position
-};
-```
-
----
-
-### `SORT_DIRECTION`
-
-Enum-like object for layout direction:
-
-```js
-import { SORT_DIRECTION } from '@emhamitay/ghostdrop'
-
-SORT_DIRECTION = {
-  Vertical: "vertical",
-  Horizontal: "horizontal",
-  Grid: "grid",
-};
-```
-
----
-
-## ✅ Tips
-
-* Wrap your entire app with `DndContext`
-* Use stable items with an unqiue `.id` property for items
-* Always set `key={id}` on repeated elements
-* Add `GhostLayer` for smooth and professional visual feedback
-
-בהצלחה בעה"י!
