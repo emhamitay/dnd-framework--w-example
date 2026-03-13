@@ -181,7 +181,7 @@ function SortableList() {
 | `<Droppable id onDrop? onHoverEnter? onHoverLeave? children>` | Defines a drop zone. Children can be JSX or `(isHover, ref) => JSX`. |
 | `<SortableDropGroup items onSorted direction? layoutAnimation? mode? indexKey?>` | A group of sortable items. Items animate to make space by default. |
 | `<SortableDraggable id>` | Draggable item inside a `SortableDropGroup`. |
-| `<DroppableSortableWrapper>` | Combines `Droppable` + `SortableDropGroup` in one component. |
+| `<DroppableSortableWrapper id items onSorted direction? layoutAnimation? mode? indexKey?>` | Combines `Droppable` + `SortableDropGroup` in one component. |
 
 ### `Droppable` Props
 
