@@ -1,10 +1,10 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { DndProvider } from "../../src/context/DndProvider";
-import { GhostLayer } from "../../src/GhostLayer";
-import { Draggable } from "../../src/wrappers/Draggable";
-import { Droppable } from "../../src/wrappers/Droppable";
-import type { DndItem } from "../../src/index";
+import { DndProvider } from "@lib/context/DndProvider";
+import { GhostLayer } from "@lib/GhostLayer";
+import { Draggable } from "@lib/wrappers/Draggable";
+import { Droppable } from "@lib/wrappers/Droppable";
+import type { DndItem } from "@lib/index";
 
 const CODE = `import { useState } from 'react';
 import type { DndItem } from '@emhamitay/ghostdrop';

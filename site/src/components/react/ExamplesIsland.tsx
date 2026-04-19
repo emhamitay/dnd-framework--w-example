@@ -1,5 +1,4 @@
 import { useState } from "react";
-import type { ReactNode } from "react";
 import { CodeBlockReact } from "./CodeBlockReact";
 import { Example1BasicDrop } from "./Example1BasicDrop";
 import { Example2HoverFeedback } from "./Example2HoverFeedback";

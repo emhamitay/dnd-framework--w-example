@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { DndProvider } from "../../src/context/DndProvider";
-import { GhostLayer } from "../../src/GhostLayer";
-import { Draggable } from "../../src/wrappers/Draggable";
-import { DroppableSortableWrapper } from "../../src/wrappers/DroppableSortableWrapper";
-import { SortableDraggable } from "../../src/wrappers/SortableDraggable";
+import * as React from "react";
+import { DndProvider } from "@lib/context/DndProvider";
+import { GhostLayer } from "@lib/GhostLayer";
+import { Draggable } from "@lib/wrappers/Draggable";
+import { DroppableSortableWrapper } from "@lib/wrappers/DroppableSortableWrapper";
+import { SortableDraggable } from "@lib/wrappers/SortableDraggable";
 
 const CODE = `import type { DndItem } from '@emhamitay/ghostdrop';
 import {
@@ -35,13 +36,13 @@ import {
   )}
 </DroppableSortableWrapper>`;
 
-const BENCH = [
+const BENCH: Person[] = [
   { id: "p1", name: "Alice", role: "Frontend" },
   { id: "p2", name: "Bob", role: "Backend" },
   { id: "p3", name: "Carol", role: "Design" },
 ];
 
-const INITIAL_TEAM = [
+const INITIAL_TEAM: Person[] = [
   { id: "p4", name: "Dan", role: "Lead", index: 0 },
 ];
 
@@ -52,13 +53,20 @@ const ROLE_COLOR = {
   Lead:     "bg-amber-100 text-amber-700",
 };
 
-function PersonCard({ person, draggable = false }) {
+type Person = {
+  id: string;
+  name: string;
+  role: keyof typeof ROLE_COLOR;
+  index?: number;
+};
+
+function PersonCard({ person, draggable = false }: { person: Person; draggable?: boolean }) {
   const card = (
     <div className="bg-white border border-slate-200 rounded-lg px-3 py-2.5 shadow-sm select-none flex items-center gap-3 hover:shadow-md transition-shadow">
       <span className="text-lg">👤</span>
       <div>
         <p className="text-sm font-semibold text-slate-800">{person.name}</p>
-        <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${ROLE_COLOR[person.role] ?? "bg-slate-100 text-slate-600"}`}>
+        <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${ROLE_COLOR[person.role]}`}>
           {person.role}
         </span>
       </div>
@@ -107,11 +115,12 @@ function Demo() {
         <div className="flex-1">
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Team</p>
           <DroppableSortableWrapper
+            id="team"
             items={team}
             onSorted={setTeam}
             onDrop={(item) => addToTeam(item.id)}
           >
-            {({ isHover }) => (
+            {({ isHover }: { isHover: boolean }) => (
               <div className={`flex flex-col gap-2 min-h-24 rounded-xl border-2 border-dashed p-3 transition-all duration-150 ${
                 isHover ? "border-indigo-400 bg-indigo-50" : "border-slate-200 bg-slate-50"
               }`}>
@@ -142,7 +151,7 @@ function Demo() {
   );
 }
 
-export function Example3Mixed({ CodeBlock }) {
+export function Example3Mixed({ CodeBlock }: { CodeBlock: (props: { code: string; label: string }) => React.ReactNode }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-6 items-start">
       <div className="bg-white rounded-2xl border border-slate-200 p-6">

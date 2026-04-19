@@ -1,9 +1,10 @@
 import { useState } from "react";
-import type { DndItem } from "../../../src/index";
-import { DndProvider } from "../../../src/context/DndProvider";
-import { GhostLayer } from "../../../src/GhostLayer";
-import { Draggable } from "../../../src/wrappers/Draggable";
-import { Droppable } from "../../../src/wrappers/Droppable";
+import type { RefObject } from "react";
+import type { DndItem } from "@lib/index";
+import { DndProvider } from "@lib/context/DndProvider";
+import { GhostLayer } from "@lib/GhostLayer";
+import { Draggable } from "@lib/wrappers/Draggable";
+import { Droppable } from "@lib/wrappers/Droppable";
 
 export function LiveQuickDemo() {
   const [dropped, setDropped] = useState<string | null>(null);
@@ -19,9 +20,9 @@ export function LiveQuickDemo() {
         </Draggable>
 
         <Droppable id="qs-zone" onDrop={(item: DndItem) => setDropped(item.id)}>
-          {(isHover, ref) => (
+          {(isHover: boolean, ref: RefObject<HTMLElement | null>) => (
             <div
-              ref={ref}
+              ref={ref as RefObject<HTMLDivElement>}
               className={`w-44 h-20 rounded-xl border-2 border-dashed flex items-center justify-center text-sm font-medium transition-all duration-150 ${
                 isHover
                   ? "border-indigo-400 bg-indigo-50 text-indigo-600 scale-105"

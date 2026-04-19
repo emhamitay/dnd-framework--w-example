@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { DndProvider } from "../../src/context/DndProvider";
-import { GhostLayer } from "../../src/GhostLayer";
-import { Draggable } from "../../src/wrappers/Draggable";
-import { Droppable } from "../../src/wrappers/Droppable";
+import * as React from "react";
+import { DndProvider } from "@lib/context/DndProvider";
+import { GhostLayer } from "@lib/GhostLayer";
+import { Draggable } from "@lib/wrappers/Draggable";
+import { Droppable } from "@lib/wrappers/Droppable";
 
 const CODE = `import type { DndItem } from '@emhamitay/ghostdrop';
 import { DndProvider, GhostLayer, Draggable, Droppable } from '@emhamitay/ghostdrop';
@@ -30,7 +31,7 @@ const PULL_REQUESTS = [
   { id: "pr-44", title: "Refactor auth", author: "carol" },
 ];
 
-function Badge({ children, color }) {
+function Badge({ children, color }: { children: React.ReactNode; color: string }) {
   return (
     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${color}`}>
       {children}
@@ -134,7 +135,7 @@ function Demo() {
   );
 }
 
-export function Example4MultiGroup({ CodeBlock }) {
+export function Example4MultiGroup({ CodeBlock }: { CodeBlock: (props: { code: string; label: string }) => React.ReactNode }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-6 items-start">
       <div className="bg-white rounded-2xl border border-slate-200 p-6">

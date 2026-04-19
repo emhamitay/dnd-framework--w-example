@@ -12,67 +12,6 @@ const { code, label, stretch = false } = Astro.props;
 // Determine language based on label
 const language = label === "Terminal" ? "bash" : "tsx";
 
-// Custom theme matching the oneDark from react-syntax-highlighter
-const customTheme = {
-  name: 'custom-one-dark',
-  type: 'dark',
-  colors: {
-    'editor.background': '#282c34',
-    'editor.foreground': '#abb2bf',
-  },
-  tokenColors: [
-    {
-      scope: ['comment', 'prolog', 'doctype', 'cdata'],
-      settings: {
-        foreground: '#6A9955',
-        fontStyle: 'italic'
-      }
-    },
-    {
-      scope: ['punctuation'],
-      settings: {
-        foreground: '#abb2bf'
-      }
-    },
-    {
-      scope: ['property', 'tag', 'boolean', 'number', 'constant', 'symbol', 'deleted'],
-      settings: {
-        foreground: '#d19a66'
-      }
-    },
-    {
-      scope: ['selector', 'attr-name', 'string', 'char', 'builtin', 'inserted'],
-      settings: {
-        foreground: '#98c379'
-      }
-    },
-    {
-      scope: ['entity', 'url', 'language-css .string', 'style .string'],
-      settings: {
-        foreground: '#56b6c2'
-      }
-    },
-    {
-      scope: ['atrule', 'attr-value', 'keyword'],
-      settings: {
-        foreground: '#c678dd'
-      }
-    },
-    {
-      scope: ['function', 'class-name'],
-      settings: {
-        foreground: '#62aeef'
-      }
-    },
-    {
-      scope: ['regex', 'important', 'variable'],
-      settings: {
-        foreground: '#e06c75'
-      }
-    },
-  ]
-};
-
 // Generate highlighted HTML
 const html = await codeToHtml(code, {
   lang: language,

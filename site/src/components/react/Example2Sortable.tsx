@@ -1,9 +1,9 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { DndProvider } from "../../src/context/DndProvider";
-import { GhostLayer } from "../../src/GhostLayer";
-import { SortableDropGroup } from "../../src/wrappers/SortableDropGroup";
-import { SortableDraggable } from "../../src/wrappers/SortableDraggable";
+import { DndProvider } from "@lib/context/DndProvider";
+import { GhostLayer } from "@lib/GhostLayer";
+import { SortableDropGroup } from "@lib/wrappers/SortableDropGroup";
+import { SortableDraggable } from "@lib/wrappers/SortableDraggable";
 
 const CODE = `import { useState } from 'react';
 import { DndProvider, GhostLayer, SortableDropGroup, SortableDraggable } from '@emhamitay/ghostdrop';

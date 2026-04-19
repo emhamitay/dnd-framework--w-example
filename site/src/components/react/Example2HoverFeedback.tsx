@@ -1,11 +1,10 @@
 import { useState } from "react";
-import type { ReactNode } from "react";
-import { CodeBlock as SyntaxBlock } from "../components/CodeBlock";
-import { DndProvider } from "../../src/context/DndProvider";
-import { GhostLayer } from "../../src/GhostLayer";
-import { Draggable } from "../../src/wrappers/Draggable";
-import { Droppable } from "../../src/wrappers/Droppable";
-import type { DndItem } from "../../src/types";
+import type { ReactNode, RefObject } from "react";
+import { DndProvider } from "@lib/context/DndProvider";
+import { GhostLayer } from "@lib/GhostLayer";
+import { Draggable } from "@lib/wrappers/Draggable";
+import { Droppable } from "@lib/wrappers/Droppable";
+import type { DndItem } from "@lib/types";
 
 const CODE_A = `// inside <DndProvider>
 <Droppable id="inbox" onDrop={(item: DndItem) => console.log(item.id)}>
@@ -73,9 +72,9 @@ function Demo() {
           <div>
             <p className="text-xs font-semibold text-blue-500 uppercase tracking-widest mb-1.5">A · isHover (render prop)</p>
             <Droppable id="inbox-hover" onDrop={(item: DndItem) => setDroppedInbox(item.id)}>
-              {(isHover, ref) => (
+              {(isHover: boolean, ref: RefObject<HTMLElement | null>) => (
                 <div
-                  ref={ref}
+                  ref={ref as RefObject<HTMLDivElement>}
                   className={`min-h-20 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-1 transition-all duration-150 text-center px-2 ${
                     isHover ? "border-blue-400 bg-blue-50 scale-105" : "border-slate-200 bg-slate-50"
                   }`}
@@ -121,7 +120,7 @@ function Demo() {
   );
 }
 
-export function Example2HoverFeedback(_: { CodeBlock: (props: { code: string; label: string }) => ReactNode }) {
+export function Example2HoverFeedback({ CodeBlock }: { CodeBlock: (props: { code: string; label: string }) => ReactNode }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-6 items-start">
 
@@ -157,8 +156,8 @@ export function Example2HoverFeedback(_: { CodeBlock: (props: { code: string; la
 
       {/* Right column: two focused snippets */}
       <div className="flex flex-col gap-4">
-        <SyntaxBlock code={CODE_A} label="A · isHover render prop" />
-        <SyntaxBlock code={CODE_B} label="B · onHoverEnter / onHoverLeave" />
+        <CodeBlock code={CODE_A} label="A · isHover render prop" />
+        <CodeBlock code={CODE_B} label="B · onHoverEnter / onHoverLeave" />
       </div>
     </div>
   );
