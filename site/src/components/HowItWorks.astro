@@ -1,0 +1,135 @@
+---
+// HowItWorks section - fully static with inline SVG/HTML FlowDiagram
+---
+
+<section id="how-it-works" class="bg-white py-20 px-6">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="text-3xl font-bold text-slate-900 text-center mb-3">How it works</h2>
+    <p class="text-slate-500 text-center mb-14 text-lg max-w-xl mx-auto">
+      Three concepts. Once you get these, everything else follows naturally.
+    </p>
+
+    <!-- Flow diagram -->
+    <div class="mb-12">
+      <div class="bg-slate-900 rounded-2xl p-6 text-sm font-mono">
+        <p class="text-slate-400 text-xs mb-5 uppercase tracking-widest">The flow</p>
+        <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-0 flex-wrap justify-center">
+          <div class="bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-center min-w-32">
+            <p class="text-xs text-indigo-200 mb-0.5">user drags</p>
+            <p class="font-bold">&lt;Draggable id="x"&gt;</p>
+          </div>
+          <div class="text-slate-500 text-lg sm:mx-3">→</div>
+          <div class="bg-slate-700 text-slate-200 px-4 py-2.5 rounded-xl text-center min-w-32">
+            <p class="text-xs text-slate-400 mb-0.5">framework tracks it</p>
+            <p class="font-bold">ghost follows cursor</p>
+          </div>
+          <div class="text-slate-500 text-lg sm:mx-3">→</div>
+          <div class="bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-center min-w-32">
+            <p class="text-xs text-emerald-200 mb-0.5">user releases over</p>
+            <p class="font-bold">&lt;Droppable id="zone"&gt;</p>
+          </div>
+          <div class="text-slate-500 text-lg sm:mx-3">→</div>
+          <div class="bg-amber-600 text-white px-4 py-2.5 rounded-xl text-center min-w-32">
+            <p class="text-xs text-amber-200 mb-0.5">your callback fires</p>
+            <p class="font-bold">onDrop({"{ id: 'x' }"})</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core concepts -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
+
+      <!-- Draggable -->
+      <div class="bg-slate-50 rounded-2xl border border-slate-100 p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl">✋</span>
+          <h3 class="font-bold text-slate-900 text-base font-mono">&lt;Draggable&gt;</h3>
+        </div>
+        <div class="text-slate-600 text-sm leading-relaxed space-y-2">
+          <p>
+            A wrapper around <strong class="text-slate-800">whatever you want to drag</strong> — a card, a row, an image, anything.
+            The only thing you must give it is an <code class="bg-slate-200 text-slate-800 px-1.5 py-0.5 rounded text-xs font-mono">id</code>. That id is what comes back to you
+            when it lands somewhere, so you know which item was moved.
+          </p>
+          <p class="text-slate-400 italic">
+            The framework doesn't know what your data is. It just hands your id back to you and lets you decide what to do.
+          </p>
+        </div>
+      </div>
+
+      <!-- Droppable -->
+      <div class="bg-slate-50 rounded-2xl border border-slate-100 p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl">📥</span>
+          <h3 class="font-bold text-slate-900 text-base font-mono">&lt;Droppable&gt;</h3>
+        </div>
+        <div class="text-slate-600 text-sm leading-relaxed space-y-2">
+          <p>
+            Marks an area on the page as a valid <strong class="text-slate-800">landing zone</strong>.
+            When the user releases a draggable over it, <code class="bg-slate-200 text-slate-800 px-1.5 py-0.5 rounded text-xs font-mono">onDrop(item)</code> fires — and <code class="bg-slate-200 text-slate-800 px-1.5 py-0.5 rounded text-xs font-mono">item</code> is:
+          </p>
+          <div class="bg-slate-100 rounded-lg px-3 py-2 font-mono text-xs text-slate-700 mt-1">
+            {"{ id: 'your-id', type: 'default', data: anything }"}
+          </div>
+          <p class="mt-2">
+            <code class="bg-slate-200 text-slate-800 px-1.5 py-0.5 rounded text-xs font-mono">id</code> — what was dropped.{" "}
+            <code class="bg-slate-200 text-slate-800 px-1.5 py-0.5 rounded text-xs font-mono">type</code> — optional label you set on Draggable to filter drops.{" "}
+            <code class="bg-slate-200 text-slate-800 px-1.5 py-0.5 rounded text-xs font-mono">data</code> — any extra info you attached.
+          </p>
+        </div>
+      </div>
+
+      <!-- GhostLayer -->
+      <div class="bg-slate-50 rounded-2xl border border-slate-100 p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl">👻</span>
+          <h3 class="font-bold text-slate-900 text-base font-mono">&lt;GhostLayer&gt;</h3>
+        </div>
+        <div class="text-slate-600 text-sm leading-relaxed space-y-2">
+          <p>
+            Completely <strong class="text-slate-800">optional</strong>. Renders a visual copy of the dragged
+            element that follows the cursor while dragging.
+          </p>
+          <p>
+            It uses a React portal to render at the top of the page — so it never gets clipped by
+            <code class="bg-slate-200 text-slate-800 px-1.5 py-0.5 rounded text-xs font-mono">overflow: hidden</code>, never loses to <code class="bg-slate-200 text-slate-800 px-1.5 py-0.5 rounded text-xs font-mono">z-index</code> wars.
+            That was actually the main reason this framework was built from scratch.
+          </p>
+          <p class="text-slate-400 italic">
+            Don't like it? Skip it. Build your own. The drag-and-drop still works without it.
+          </p>
+        </div>
+      </div>
+
+      <!-- Sortable -->
+      <div class="bg-slate-50 rounded-2xl border border-slate-100 p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl">↕️</span>
+          <h3 class="font-bold text-slate-900 text-base font-mono">&lt;SortableDropGroup&gt; + &lt;SortableDraggable&gt;</h3>
+        </div>
+        <div class="text-slate-600 text-sm leading-relaxed space-y-2">
+          <p>
+            A group of items that can <strong class="text-slate-800">reorder themselves</strong> when you drag one
+            over another. Think reorderable lists, kanban columns, priority queues.
+          </p>
+          <p>
+            You give it your <code class="bg-slate-200 text-slate-800 px-1.5 py-0.5 rounded text-xs font-mono">items</code> array (your current order) and an <code class="bg-slate-200 text-slate-800 px-1.5 py-0.5 rounded text-xs font-mono">onSorted</code> callback.
+            When the user finishes dragging, <code class="bg-slate-200 text-slate-800 px-1.5 py-0.5 rounded text-xs font-mono">onSorted</code> gives you back the same array in the new order — you just set your state.
+          </p>
+          <div class="bg-slate-100 rounded-lg px-3 py-2 font-mono text-xs text-slate-700">
+            {"onSorted={(newItems) => setItems(newItems)}"}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DroppableSortableWrapper -->
+    <div class="bg-indigo-50 border border-indigo-200 rounded-xl px-5 py-4 text-sm text-indigo-900 leading-relaxed">
+      <strong>What about <code class="bg-indigo-100 px-1.5 py-0.5 rounded text-xs font-mono">&lt;DroppableSortableWrapper&gt;</code>?</strong>{" "}
+      It's just Droppable + SortableDropGroup combined into one component — for when you want a zone that
+      accepts drops from outside <em>and</em> lets items inside reorder. Instead of composing two components,
+      you use one. Same props, same concepts.
+    </div>
+  </div>
+</section>
