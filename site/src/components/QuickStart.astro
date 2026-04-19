@@ -1,0 +1,56 @@
+---
+import CodeBlock from "./CodeBlock.astro";
+import { LiveQuickDemo } from "./react/LiveQuickDemo";
+
+const INSTALL_CODE = `npm install @emhamitay/ghostdrop`;
+
+const USAGE_CODE = `import { useState } from 'react';
+import type { DndItem } from '@emhamitay/ghostdrop';
+import { DndProvider, GhostLayer, Draggable, Droppable } from '@emhamitay/ghostdrop';
+
+function App() {
+  return (
+    <DndProvider>
+      <GhostLayer />
+
+      <Draggable id="card-1">
+        <div>Drag me</div>
+      </Draggable>
+
+      <Droppable id="zone-1" onDrop={(item: DndItem) => console.log('dropped:', item.id)}>
+        <div>Drop here</div>
+      </Droppable>
+    </DndProvider>
+  );
+}`;
+---
+
+<section id="quickstart" class="bg-slate-50 py-20 px-6">
+  <div class="max-w-3xl mx-auto">
+    <h2 class="text-3xl font-bold text-slate-900 text-center mb-3">Quick Start</h2>
+    <p class="text-slate-500 text-center mb-14 text-lg">Three steps. That's it.</p>
+
+    <div class="flex flex-col gap-10">
+      <div>
+        <p class="text-slate-700 font-bold mb-3 text-sm tracking-widest uppercase">1 · Install</p>
+        <CodeBlock code={INSTALL_CODE} label="Terminal" />
+      </div>
+
+      <div>
+        <p class="text-slate-700 font-bold mb-3 text-sm tracking-widest uppercase">2 · Add to your app</p>
+        <CodeBlock code={USAGE_CODE} label="App.tsx" />
+      </div>
+
+      <div>
+        <p class="text-slate-700 font-bold mb-3 text-sm tracking-widest uppercase">3 · Try it — live</p>
+        <div class="bg-white border border-slate-200 rounded-2xl px-6 py-4">
+          <LiveQuickDemo client:load />
+        </div>
+      </div>
+    </div>
+
+    <p class="text-center text-slate-400 text-sm mt-10">
+      Want more? See the <a href="#examples" class="text-indigo-500 hover:underline font-medium">Examples</a> below for sorting, groups, and custom callbacks.
+    </p>
+  </div>
+</section>

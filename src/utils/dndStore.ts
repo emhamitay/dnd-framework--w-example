@@ -15,6 +15,7 @@ interface DndState {
   draggedFromIndex: number | null;
   draggedSize: { width: number; height: number } | null;
   draggedGap: number;
+  pendingSortHandler: (() => void) | null;
   setConsoleLog: (val: boolean) => void;
   startDrag: (
     id: string,
@@ -29,6 +30,7 @@ interface DndState {
     size: { width: number; height: number };
     gap: number;
   }) => void;
+  setPendingSortHandler: (fn: (() => void) | null) => void;
 }
 
 export const useDndStore = create<DndState>((set, get) => ({
@@ -40,6 +42,7 @@ export const useDndStore = create<DndState>((set, get) => ({
   draggedFromIndex: null,
   draggedSize: null,
   draggedGap: 0,
+  pendingSortHandler: null,
 
   setConsoleLog: (val) => {
     set({ consoleLog: val });
@@ -77,12 +80,25 @@ export const useDndStore = create<DndState>((set, get) => ({
     if (typeof document !== "undefined") {
       document.body.classList.remove("dnd-noselect");
     }
-    set({ activeItem: null, pointerPosition: null, hoverSortPosition: null, hoverId: null, draggedFromIndex: null, draggedSize: null, draggedGap: 0 });
+    set({
+      activeItem: null,
+      pointerPosition: null,
+      hoverSortPosition: null,
+      hoverId: null,
+      draggedFromIndex: null,
+      draggedSize: null,
+      draggedGap: 0,
+      pendingSortHandler: null,
+    });
     log(get, "endDrag");
   },
 
   setDraggedInfo: ({ fromIndex, size, gap }) => {
     set({ draggedFromIndex: fromIndex, draggedSize: size, draggedGap: gap });
+  },
+
+  setPendingSortHandler: (fn) => {
+    set({ pendingSortHandler: fn });
   },
 }));
 

@@ -21,14 +21,14 @@
   ],
   "license": "MIT",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "npm --prefix site run dev",
+    "build": "npm --prefix site run build",
     "lint": "eslint .",
-    "preview": "vite preview",
+    "preview": "npm --prefix site run preview",
     "test": "vitest run --config vitest.config.js",
     "test:watch": "vitest --config vitest.config.js",
     "build:lib": "vite build --config vite.lib.config.js",
-    "deploy": "npm run build && npx gh-pages -d dist"
+    "deploy": "npm run build && npx gh-pages -d site/dist"
   },
   "files": [
     "dist",
