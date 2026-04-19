@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useSortableDrop, SORT_MODE } from "./useSortableDrop";
 import { useDndStore } from "../utils/dndStore";
-import mouseUpEventStore from "../utils/MouseUpEventStore";
 
 type Item = { id: string; index: number };
 
@@ -32,7 +31,6 @@ function simulateDrag(
 
 beforeEach(() => {
   useDndStore.setState({ activeItem: null, hoverId: null });
-  mouseUpEventStore.clearEvents();
 });
 
 describe("useSortableDrop — exports", () => {
@@ -42,44 +40,16 @@ describe("useSortableDrop — exports", () => {
   });
 });
 
-describe("useSortableDrop — sortId", () => {
-  it("returns a string starting with 'sortable-group-'", () => {
-    const { result } = renderHook(() =>
-      useSortableDrop({ items: ITEMS, onSorted: vi.fn() })
-    );
-    expect(result.current).toMatch(/^sortable-group-/);
-  });
-
-  it("returns the same sortId across re-renders", () => {
-    const { result, rerender } = renderHook(() =>
-      useSortableDrop({ items: ITEMS, onSorted: vi.fn() })
-    );
-    const first = result.current;
-    rerender();
-    expect(result.current).toBe(first);
-  });
-
-  it("returns a unique sortId for each hook instance", () => {
-    const { result: r1 } = renderHook(() =>
-      useSortableDrop({ items: ITEMS, onSorted: vi.fn() })
-    );
-    const { result: r2 } = renderHook(() =>
-      useSortableDrop({ items: ITEMS, onSorted: vi.fn() })
-    );
-    expect(r1.current).not.toBe(r2.current);
-  });
-});
-
 describe("useSortableDrop — Insert mode (default)", () => {
   it("calls onSorted with items shifted when drag resolves", () => {
     const onSorted = vi.fn();
-    const { result } = renderHook(() =>
+    renderHook(() =>
       useSortableDrop({ items: ITEMS, onSorted, mode: SORT_MODE.Insert })
     );
 
     // Drag "a" → after "c": expected result = [b, c, a]
     act(() => { simulateDrag("a", "c", "after"); });
-    act(() => { mouseUpEventStore.runEvents(result.current); });
+    act(() => { useDndStore.getState().pendingSortHandler?.(); });
 
     expect(onSorted).toHaveBeenCalledOnce();
     const newItems = onSorted.mock.calls[0][0] as Item[];
@@ -88,12 +58,12 @@ describe("useSortableDrop — Insert mode (default)", () => {
 
   it("updates index values in the returned array", () => {
     const onSorted = vi.fn();
-    const { result } = renderHook(() =>
+    renderHook(() =>
       useSortableDrop({ items: ITEMS, onSorted, mode: SORT_MODE.Insert })
     );
 
     act(() => { simulateDrag("a", "c", "after"); });
-    act(() => { mouseUpEventStore.runEvents(result.current); });
+    act(() => { useDndStore.getState().pendingSortHandler?.(); });
 
     const newItems = onSorted.mock.calls[0][0] as Item[];
     newItems.forEach((item, i) => {
@@ -105,13 +75,13 @@ describe("useSortableDrop — Insert mode (default)", () => {
 describe("useSortableDrop — Switch mode", () => {
   it("calls onSorted with two items swapped", () => {
     const onSorted = vi.fn();
-    const { result } = renderHook(() =>
+    renderHook(() =>
       useSortableDrop({ items: ITEMS, onSorted, mode: SORT_MODE.Switch })
     );
 
     // Drag "a" → after "c": swap a(0) and c(2) → [c, b, a]
     act(() => { simulateDrag("a", "c", "after"); });
-    act(() => { mouseUpEventStore.runEvents(result.current); });
+    act(() => { useDndStore.getState().pendingSortHandler?.(); });
 
     expect(onSorted).toHaveBeenCalledOnce();
     const newItems = onSorted.mock.calls[0][0] as Item[];
@@ -122,36 +92,36 @@ describe("useSortableDrop — Switch mode", () => {
 describe("useSortableDrop — no-op cases", () => {
   it("does not call onSorted when there is no active drag", () => {
     const onSorted = vi.fn();
-    const { result } = renderHook(() =>
+    renderHook(() =>
       useSortableDrop({ items: ITEMS, onSorted })
     );
     // No simulateDrag — store has activeItem: null
-    act(() => { mouseUpEventStore.runEvents(result.current); });
+    act(() => { useDndStore.getState().pendingSortHandler?.(); });
 
     expect(onSorted).not.toHaveBeenCalled();
   });
 
   it("does not call onSorted when dragged item position is unchanged", () => {
     const onSorted = vi.fn();
-    const { result } = renderHook(() =>
+    renderHook(() =>
       useSortableDrop({ items: ITEMS, onSorted })
     );
 
     // Hover over the same item that is being dragged → fromIndex === toIndex
     act(() => { simulateDrag("b", "b", "before"); });
-    act(() => { mouseUpEventStore.runEvents(result.current); });
+    act(() => { useDndStore.getState().pendingSortHandler?.(); });
 
     expect(onSorted).not.toHaveBeenCalled();
   });
 
   it("does not call onSorted when hoverId is not in items", () => {
     const onSorted = vi.fn();
-    const { result } = renderHook(() =>
+    renderHook(() =>
       useSortableDrop({ items: ITEMS, onSorted })
     );
 
     act(() => { simulateDrag("a", "nonexistent-id", "after"); });
-    act(() => { mouseUpEventStore.runEvents(result.current); });
+    act(() => { useDndStore.getState().pendingSortHandler?.(); });
 
     expect(onSorted).not.toHaveBeenCalled();
   });

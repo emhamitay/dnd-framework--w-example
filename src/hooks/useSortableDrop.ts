@@ -1,7 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useDndStore } from "../utils/dndStore";
 import { calculateNewIndex, switchArray, insertItem } from "../utils/sortableUtils";
-import mouseUpEventStore from "../utils/MouseUpEventStore";
 
 export const SORT_MODE = {
   Switch: "switch",
@@ -19,19 +18,14 @@ export interface UseSortableDropOptions<T extends SortableItem> {
   mode?: SortModeValue;
 }
 
-const sortIdNameStart = "sortable-group-";
-
 export function useSortableDrop<T extends SortableItem>({
   items,
   onSorted,
   indexKey = "index",
   mode = SORT_MODE.Insert,
-}: UseSortableDropOptions<T>): string {
+}: UseSortableDropOptions<T>): void {
   const activeItem = useDndStore((s) => s.activeItem);
   const hoverId = useDndStore((s) => s.hoverId);
-
-  const sortIdRef = useRef(`${sortIdNameStart}${crypto.randomUUID()}`);
-  const sortId = sortIdRef.current;
 
   useEffect(() => {
     if (!activeItem) return;
@@ -56,13 +50,10 @@ export function useSortableDrop<T extends SortableItem>({
       onSorted?.(newItems);
     }
 
-    mouseUpEventStore.removeEvents(sortId);
-    mouseUpEventStore.addEvent(sortId, mouseUpEvent);
+    useDndStore.getState().setPendingSortHandler(mouseUpEvent);
 
     return () => {
-      // cleanup managed by mouseUpEventStore
+      useDndStore.getState().setPendingSortHandler(null);
     };
-  }, [activeItem, hoverId, items, onSorted, indexKey, mode, sortId]);
-
-  return sortId;
+  }, [activeItem, hoverId, items, onSorted, indexKey, mode]);
 }

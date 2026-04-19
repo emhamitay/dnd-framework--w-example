@@ -54,7 +54,7 @@ export function SortableDraggable({
     onHoverEnter,
     onHoverLeave,
   });
-  const { onPointerDown: rawPointerDown } = useDrag({ id, sortId });
+  const { onPointerDown: rawPointerDown } = useDrag({ id });
 
   const setRef = (node: HTMLElement | null) => {
     sortableRef.current = node;

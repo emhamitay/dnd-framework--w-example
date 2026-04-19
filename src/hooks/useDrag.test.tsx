@@ -11,12 +11,12 @@ beforeEach(() => {
 
 describe("useDrag", () => {
   it("returns an onPointerDown handler", () => {
-    const { result } = renderHook(() => useDrag({ id: "a", sortId: "group-1" }));
+    const { result } = renderHook(() => useDrag({ id: "a" }));
     expect(typeof result.current.onPointerDown).toBe("function");
   });
 
   it("starts drag when onPointerDown is called with left click", () => {
-    const { result } = renderHook(() => useDrag({ id: "box-1", sortId: "g1" }));
+    const { result } = renderHook(() => useDrag({ id: "box-1" }));
 
     const fakeElement = document.createElement("div");
     const event = new PointerEvent("pointerdown", {
@@ -37,7 +37,7 @@ describe("useDrag", () => {
   });
 
   it("does not start drag on right click (button !== 0)", () => {
-    const { result } = renderHook(() => useDrag({ id: "box-1", sortId: "g1" }));
+    const { result } = renderHook(() => useDrag({ id: "box-1" }));
 
     const event = new PointerEvent("pointerdown", { button: 2, bubbles: true });
     Object.defineProperty(event, "currentTarget", { value: document.createElement("div") });
@@ -50,7 +50,7 @@ describe("useDrag", () => {
   });
 
   it("does not start drag if event.defaultPrevented", () => {
-    const { result } = renderHook(() => useDrag({ id: "box-1", sortId: "g1" }));
+    const { result } = renderHook(() => useDrag({ id: "box-1" }));
 
     const event = new PointerEvent("pointerdown", { button: 0, bubbles: true, cancelable: true });
     event.preventDefault();
@@ -65,7 +65,7 @@ describe("useDrag", () => {
 
   it("stores custom data in activeItem", () => {
     const { result } = renderHook(() =>
-      useDrag({ id: "card-1", sortId: "g1", type: "card", data: { color: "red" } })
+      useDrag({ id: "card-1", type: "card", data: { color: "red" } })
     );
 
     const fakeElement = document.createElement("div");
@@ -82,7 +82,7 @@ describe("useDrag", () => {
   });
 
   it("does not start drag when clicking an interactive element (button)", () => {
-    const { result } = renderHook(() => useDrag({ id: "box-1", sortId: "g1" }));
+    const { result } = renderHook(() => useDrag({ id: "box-1" }));
 
     const button = document.createElement("button");
     document.body.appendChild(button);
