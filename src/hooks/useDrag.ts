@@ -1,3 +1,4 @@
+// Hook that wires pointer events on an element to start/stop dragging and update the global DnD store.
 import { useCallback, useRef } from "react";
 import { useDndStore } from "../utils/dndStore";
 import type { DragItemData } from "../types";
@@ -22,6 +23,7 @@ export function useDrag({ id, type = "default", data }: UseDragOptions) {
       if (event.defaultPrevented || event.button !== 0) return;
       if (isInteractive(event.target as Element)) return;
 
+      // Snapshot data into the store, attaching the element for GhostLayer cloning.
       startDrag(
         id,
         { type, data: { ...dataRef.current } },
@@ -34,6 +36,7 @@ export function useDrag({ id, type = "default", data }: UseDragOptions) {
       // element is under the pointer — required for touch/mobile support.
       (event.currentTarget as HTMLElement).releasePointerCapture?.(event.pointerId);
 
+      // Window-level listeners track movement and termination for the lifetime of one drag.
       const handlePointerMove = (e: PointerEvent) => {
         useDndStore.setState({ pointerPosition: { x: e.clientX, y: e.clientY } });
       };
@@ -41,6 +44,7 @@ export function useDrag({ id, type = "default", data }: UseDragOptions) {
       const preventSelect = (e: Event) => e.preventDefault();
 
       const handlePointerUp = () => {
+        // Fire any queued sort handler before clearing state, so the final hover target is still set.
         useDndStore.getState().pendingSortHandler?.();
         endDrag();
         window.removeEventListener("pointerup", handlePointerUp);
@@ -58,6 +62,7 @@ export function useDrag({ id, type = "default", data }: UseDragOptions) {
   return { onPointerDown };
 }
 
+// Prevents drag from starting when the pointer is on an interactive descendant.
 function isInteractive(element: Element | null): boolean {
   if (!element) return false;
   return (

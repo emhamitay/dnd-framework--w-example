@@ -1,3 +1,4 @@
+// Hook that registers pointer-event listeners on a DOM element to make it a drop target.
 import { useEffect, useRef } from "react";
 import { useDndStore } from "../utils/dndStore";
 import type { DndItem, UseDropResult } from "../types";
@@ -46,6 +47,7 @@ export function useDrop({ id, onDrop, onHoverEnter, onHoverLeave }: UseDropOptio
       useDndStore.getState().updateHover(null);
     };
 
+    // Guard against pointer-up events bubbling from children outside the drop zone.
     const handleDrop = (event: PointerEvent) => {
       const activeItem = useDndStore.getState().activeItem;
       if (ref.current && ref.current.contains(event.target as Node) && activeItem?.id) {

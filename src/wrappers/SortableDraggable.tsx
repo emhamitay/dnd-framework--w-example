@@ -1,3 +1,4 @@
+// Sortable drag item that combines drag, hover detection, and shift-animation styles, reading group config from SortableContext.
 import { useContext, useRef, type CSSProperties, type ReactNode } from "react";
 import { useDrag } from "../hooks/useDrag";
 import { useSortable, SORT_DIRECTION, LAYOUT_ANIMATION, type SortDirection } from "../hooks/useSortable";
@@ -33,6 +34,7 @@ export function SortableDraggable({
   children,
   className,
 }: SortableDraggableProps) {
+  // Prefer a prop-supplied sortId/direction; fall back to values from the nearest SortableDropGroup context.
   const context = useContext(SortableContext);
   const sortId = sortIdProp ?? context?.sortId;
   const elementRef = useRef<HTMLElement | null>(null);
@@ -54,6 +56,7 @@ export function SortableDraggable({
   });
   const { onPointerDown: rawPointerDown } = useDrag({ id });
 
+  // Dual-assign the same node to both the sortable hook ref and the local element ref.
   const setRef = (node: HTMLElement | null) => {
     sortableRef.current = node;
     elementRef.current = node;
@@ -65,6 +68,7 @@ export function SortableDraggable({
       const rect = el.getBoundingClientRect();
       let gap = 0;
       const next = el.nextElementSibling as HTMLElement | null;
+      // Measure the gap between this item and its next sibling to correctly compute shift distances.
       if (next) {
         const nextRect = next.getBoundingClientRect();
         gap =
@@ -112,6 +116,7 @@ export function SortableDraggable({
         userSelect: "none",
         borderRadius: 8,
         transition:
+          // Only apply the CSS transition while a drag is live, to avoid animating during initial render.
           layoutAnimation === "shift" && draggedFromIndex !== null
             ? "transform 200ms ease, box-shadow 0.2s ease"
             : "box-shadow 0.2s ease",

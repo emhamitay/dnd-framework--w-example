@@ -1,3 +1,4 @@
+// Renders a fixed-position DOM clone of the dragged element, following the pointer, via a portal.
 import { useEffect, useLayoutEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useDndStore } from "./utils/dndStore";
@@ -34,6 +35,7 @@ export function GhostLayer() {
       return;
     }
 
+    // Build a styled, non-interactive clone of the dragged element.
     const clone = draggedElement.cloneNode(true) as HTMLElement;
     clone.style.pointerEvents = "none";
     clone.style.opacity = "0.9";
@@ -68,6 +70,7 @@ export function GhostLayer() {
 
   if (!isDragging) return null;
 
+  // Center the ghost on the pointer.
   const offsetX = size.width / 2;
   const offsetY = size.height / 2;
 

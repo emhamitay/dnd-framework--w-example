@@ -1,3 +1,4 @@
+// Hook that continuously polls pointer position via rAF to determine which side (before/after) of a sortable item the pointer is on.
 import { useEffect, useRef, useState } from "react";
 import { useDndStore } from "../utils/dndStore";
 import type { DndItem, SortPosition } from "../types";
@@ -44,6 +45,8 @@ export function useSortable({
   useEffect(() => {
     if (!activeItem) return;
 
+    // rAF loop — checks pointer position every frame instead of relying on pointer events,
+    // which can miss moves when the pointer travels fast over thin items.
     const checkPosition = () => {
       const el = ref.current;
       if (!el) return;
@@ -74,6 +77,7 @@ export function useSortable({
         }
       }
 
+      // Grid layout uses only the Y axis for split; linear layouts use the axis matching direction.
       let position: SortPosition;
 
       if (direction === SORT_DIRECTION.Grid) {
@@ -88,6 +92,7 @@ export function useSortable({
         position = pointerCoord < center ? "before" : "after";
       }
 
+      // Only write to the store when the position actually changes, to avoid unnecessary re-renders.
       if (inside && position !== lastPositionRef.current) {
         lastPositionRef.current = position;
         updateHover(id);

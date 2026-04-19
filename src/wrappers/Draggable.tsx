@@ -1,3 +1,4 @@
+// Component that injects drag behavior into its single child element without adding a wrapper DOM node.
 import React from "react";
 import { useDrag } from "../hooks/useDrag";
 import type { DragItemData } from "../types";
@@ -13,6 +14,7 @@ export interface DraggableProps {
 export function Draggable({ id, type = "default", data, children, className }: DraggableProps) {
   const { onPointerDown } = useDrag({ id, type, data });
 
+  // Merge the consumer's className with any existing className on the child.
   const childClassName = (children.props as { className?: string }).className ?? "";
   const combinedClassName = [childClassName, className].filter(Boolean).join(" ");
 

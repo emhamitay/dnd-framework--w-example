@@ -1,3 +1,4 @@
+// Global Zustand store that holds all drag-and-drop runtime state and actions.
 import { create } from "zustand";
 import type { ActiveItem } from "../types";
 
@@ -51,10 +52,12 @@ export const useDndStore = create<DndState>((set, get) => ({
   startDrag: (id, options = {}, draggedElement = null, pointerPosition = null) => {
     const { type = "default", data = null } = options;
 
+    // Disable text selection globally for the duration of the drag.
     if (typeof document !== "undefined") {
       document.body.classList.add("dnd-noselect");
     }
 
+    // Guard against a missing pointer position (e.g. keyboard-initiated drags).
     const initialPointer = pointerPosition ?? { x: 0, y: 0 };
     set({
       activeItem: {
@@ -80,6 +83,7 @@ export const useDndStore = create<DndState>((set, get) => ({
     if (typeof document !== "undefined") {
       document.body.classList.remove("dnd-noselect");
     }
+    // Full reset — every transient drag field goes back to null/zero.
     set({
       activeItem: null,
       pointerPosition: null,
@@ -102,6 +106,7 @@ export const useDndStore = create<DndState>((set, get) => ({
   },
 }));
 
+// Optional debug logger — only emits when consoleLog is enabled via setConsoleLog.
 function log(get: () => DndState, message: string) {
   const { consoleLog, activeItem, hoverId } = get();
   if (!consoleLog) return;

@@ -1,3 +1,4 @@
+// Hook that registers a pending sort handler so the reorder fires atomically at the moment of pointer-up.
 import { useEffect } from "react";
 import { useDndStore } from "../utils/dndStore";
 import { calculateNewIndex, switchArray, insertItem } from "../utils/sortableUtils";
@@ -50,6 +51,8 @@ export function useSortableDrop<T extends SortableItem>({
       onSorted?.(newItems);
     }
 
+    // Store the handler rather than attaching a window listener here—useDrag fires it
+    // after pendingSortHandler is set but before endDrag clears state.
     useDndStore.getState().setPendingSortHandler(mouseUpEvent);
 
     return () => {

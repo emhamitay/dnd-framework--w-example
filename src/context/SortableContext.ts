@@ -1,3 +1,4 @@
+// React context that passes sort-group configuration and live visual state down to SortableDraggable children.
 import { createContext } from "react";
 import type { SortDirection, LayoutAnimationValue } from "../hooks/useSortable";
 
