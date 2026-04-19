@@ -1,6 +1,6 @@
 {
   "name": "@emhamitay/ghostdrop",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "A lightweight, flexible drag-and-drop framework for React — supports free drag, droppable zones, and sortable lists out of the box.",
   "type": "module",
   "main": "dist/index.js",

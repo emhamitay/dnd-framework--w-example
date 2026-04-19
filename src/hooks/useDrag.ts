@@ -32,12 +32,10 @@ export function useDrag({ id, sortId = "", type = "default", data }: UseDragOpti
       (event.currentTarget as HTMLElement).releasePointerCapture?.(event.pointerId);
 
       const handlePointerMove = (e: PointerEvent) => {
-        useDndStore.setState((s) => ({
-          activeItem: s.activeItem
-            ? { ...s.activeItem, pointerPosition: { x: e.clientX, y: e.clientY } }
-            : null,
-        }));
+        useDndStore.setState({ pointerPosition: { x: e.clientX, y: e.clientY } });
       };
+
+      const preventSelect = (e: Event) => e.preventDefault();
 
       const handlePointerUp = () => {
         mouseUpEventStore.runEvents(sortId);
@@ -45,10 +43,12 @@ export function useDrag({ id, sortId = "", type = "default", data }: UseDragOpti
         endDrag();
         window.removeEventListener("pointerup", handlePointerUp);
         window.removeEventListener("pointermove", handlePointerMove);
+        window.removeEventListener("selectstart", preventSelect);
       };
 
       window.addEventListener("pointerup", handlePointerUp);
       window.addEventListener("pointermove", handlePointerMove);
+      window.addEventListener("selectstart", preventSelect);
     },
     [id, type, data, sortId, startDrag, endDrag]
   );

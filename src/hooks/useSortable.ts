@@ -42,14 +42,18 @@ export function useSortable({
   const [isHover, setIsHover] = useState(false);
 
   useEffect(() => {
-    if (!activeItem || !activeItem.pointerPosition) return;
+    if (!activeItem) return;
 
     const checkPosition = () => {
       const el = ref.current;
       if (!el) return;
 
       const rect = el.getBoundingClientRect();
-      const pointer = activeItem.pointerPosition;
+      const pointer = useDndStore.getState().pointerPosition;
+      if (!pointer) {
+        requestRef.current = requestAnimationFrame(checkPosition);
+        return;
+      }
 
       const inside =
         pointer.x >= rect.left &&
@@ -87,11 +91,7 @@ export function useSortable({
       if (inside && position !== lastPositionRef.current) {
         lastPositionRef.current = position;
         updateHover(id);
-        useDndStore.setState((s) => ({
-          activeItem: s.activeItem
-            ? { ...s.activeItem, data: { ...s.activeItem.data, position } }
-            : null,
-        }));
+        useDndStore.setState({ hoverSortPosition: position });
       }
 
       requestRef.current = requestAnimationFrame(checkPosition);

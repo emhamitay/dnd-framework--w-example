@@ -26,6 +26,7 @@ export function Draggable({ id, type = "default", data, children, className }: D
     style: {
       ...((children.props as { style?: React.CSSProperties }).style ?? {}),
       touchAction: "none",
+      userSelect: "none",
     },
     className: combinedClassName || undefined,
   });

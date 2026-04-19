@@ -13,11 +13,12 @@ function simulateDrag(id = "dragged") {
       pointerPosition: { x: 50, y: 50 },
     },
     hoverId: null,
+    pointerPosition: { x: 50, y: 50 },
   });
 }
 
 beforeEach(() => {
-  useDndStore.setState({ activeItem: null, hoverId: null });
+  useDndStore.setState({ activeItem: null, hoverId: null, pointerPosition: null, hoverSortPosition: null });
 });
 
 describe("useSortable — exports and return shape", () => {
@@ -91,6 +92,7 @@ describe("useSortable — pointer-position-based isHover", () => {
           pointerPosition: { x: 50, y: 50 },
         },
         hoverId: null,
+        pointerPosition: { x: 50, y: 50 },
       });
     });
 
@@ -122,6 +124,7 @@ describe("useSortable — pointer-position-based isHover", () => {
           pointerPosition: { x: 50, y: 50 }, // outside the 200-300 box
         },
         hoverId: null,
+        pointerPosition: { x: 50, y: 50 },
       });
     });
 

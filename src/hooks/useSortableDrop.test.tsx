@@ -22,16 +22,17 @@ function simulateDrag(
     activeItem: {
       id: draggedId,
       type: "default",
-      data: { position },
+      data: {},
       draggedElement: null,
       pointerPosition: { x: 0, y: 0 },
     },
     hoverId: hoveredId,
+    hoverSortPosition: position,
   });
 }
 
 beforeEach(() => {
-  useDndStore.setState({ activeItem: null, hoverId: null });
+  useDndStore.setState({ activeItem: null, hoverId: null, hoverSortPosition: null });
   mouseUpEventStore.clearEvents();
 });
 

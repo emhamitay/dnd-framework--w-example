@@ -8,6 +8,8 @@ interface DragOptions {
 
 interface DndState {
   activeItem: ActiveItem | null;
+  pointerPosition: { x: number; y: number } | null;
+  hoverSortPosition: "before" | "after" | null;
   hoverId: string | null;
   consoleLog: boolean;
   draggedFromIndex: number | null;
@@ -31,6 +33,8 @@ interface DndState {
 
 export const useDndStore = create<DndState>((set, get) => ({
   activeItem: null,
+  pointerPosition: null,
+  hoverSortPosition: null,
   hoverId: null,
   consoleLog: false,
   draggedFromIndex: null,
@@ -48,14 +52,17 @@ export const useDndStore = create<DndState>((set, get) => ({
       document.body.classList.add("dnd-noselect");
     }
 
+    const initialPointer = pointerPosition ?? { x: 0, y: 0 };
     set({
       activeItem: {
         id,
         type,
         data: data ?? {},
         draggedElement,
-        pointerPosition: pointerPosition ?? { x: 0, y: 0 },
+        pointerPosition: initialPointer,
       },
+      pointerPosition: initialPointer,
+      hoverSortPosition: null,
     });
 
     log(get, "startDrag runs");
@@ -70,7 +77,7 @@ export const useDndStore = create<DndState>((set, get) => ({
     if (typeof document !== "undefined") {
       document.body.classList.remove("dnd-noselect");
     }
-    set({ activeItem: null, hoverId: null, draggedFromIndex: null, draggedSize: null, draggedGap: 0 });
+    set({ activeItem: null, pointerPosition: null, hoverSortPosition: null, hoverId: null, draggedFromIndex: null, draggedSize: null, draggedGap: 0 });
     log(get, "endDrag");
   },
 

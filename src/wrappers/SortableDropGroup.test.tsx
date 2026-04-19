@@ -102,11 +102,12 @@ describe("SortableDropGroup — sorting", () => {
         activeItem: {
           id: "a",
           type: "default",
-          data: { position: "after" },
+          data: {},
           draggedElement: null,
           pointerPosition: { x: 0, y: 0 },
         },
         hoverId: "c",
+        hoverSortPosition: "after",
       });
     });
 

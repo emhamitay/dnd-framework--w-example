@@ -41,7 +41,7 @@ export function useSortableDrop<T extends SortableItem>({
 
       const draggedId = activeItem.id;
       const fromIndex = items.findIndex((item) => item.id === draggedId);
-      const position = (activeItem.data?.position as "before" | "after") ?? "before";
+      const position = useDndStore.getState().hoverSortPosition ?? "before";
       const toIndex = calculateNewIndex(items, draggedId, hoverId, position);
 
       if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) return;
