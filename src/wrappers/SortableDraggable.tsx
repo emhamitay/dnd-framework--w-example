@@ -42,6 +42,7 @@ export function SortableDraggable({
   }
 
   const setDraggedInfo = useDndStore((s) => s.setDraggedInfo);
+  const draggedFromIndex = useDndStore((s) => s.draggedFromIndex);
 
   const effectiveDirection = directionProp ?? context?.direction ?? SORT_DIRECTION.Vertical;
 
@@ -111,7 +112,9 @@ export function SortableDraggable({
         userSelect: "none",
         borderRadius: 8,
         transition:
-          layoutAnimation === "shift" ? "transform 200ms ease, box-shadow 0.2s ease" : "box-shadow 0.2s ease",
+          layoutAnimation === "shift" && draggedFromIndex !== null
+            ? "transform 200ms ease, box-shadow 0.2s ease"
+            : "box-shadow 0.2s ease",
         ...itemStyle,
       }}
     >
