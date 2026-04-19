@@ -1,5 +1,5 @@
 // Hook that registers pointer-event listeners on a DOM element to make it a drop target.
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDndStore } from "../utils/dndStore";
 import type { DndItem, UseDropResult } from "../types";
 
@@ -11,7 +11,8 @@ export interface UseDropOptions {
 }
 
 export function useDrop({ id, onDrop, onHoverEnter, onHoverLeave }: UseDropOptions): UseDropResult {
-  const ref = useRef<HTMLElement | null>(null);
+  const elementRef = useRef<HTMLElement | null>(null);
+  const [element, setElement] = useState<HTMLElement | null>(null);
 
   const { hoverId } = useDndStore();
   const isHover = hoverId === id;
@@ -26,9 +27,19 @@ export function useDrop({ id, onDrop, onHoverEnter, onHoverLeave }: UseDropOptio
   onHoverEnterRef.current = onHoverEnter;
   const onHoverLeaveRef = useRef(onHoverLeave);
   onHoverLeaveRef.current = onHoverLeave;
+  const dropRef = useRef({
+    get current() {
+      return elementRef.current;
+    },
+    set current(node: HTMLElement | null) {
+      if (elementRef.current === node) return;
+      elementRef.current = node;
+      setElement(node);
+    },
+  });
 
   useEffect(() => {
-    const el = ref.current;
+    const el = element;
     if (!el) return;
 
     const handlePointerEnter = () => {
@@ -50,7 +61,7 @@ export function useDrop({ id, onDrop, onHoverEnter, onHoverLeave }: UseDropOptio
     // Guard against pointer-up events bubbling from children outside the drop zone.
     const handleDrop = (event: PointerEvent) => {
       const activeItem = useDndStore.getState().activeItem;
-      if (ref.current && ref.current.contains(event.target as Node) && activeItem?.id) {
+      if (el.contains(event.target as Node) && activeItem?.id) {
         onDropRef.current?.(activeItem);
       }
     };
@@ -64,7 +75,7 @@ export function useDrop({ id, onDrop, onHoverEnter, onHoverLeave }: UseDropOptio
       el.removeEventListener("pointerleave", handlePointerLeave);
       el.removeEventListener("pointerup", handleDrop);
     };
-  }, []); // stable handlers — registers once on mount
+  }, [element]);
 
-  return { dropRef: ref, isHover };
+  return { dropRef: dropRef.current, isHover };
 }
