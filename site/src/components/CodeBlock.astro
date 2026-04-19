@@ -1,0 +1,151 @@
+---
+import { codeToHtml } from 'shiki';
+
+interface Props {
+  code: string;
+  label: string;
+  stretch?: boolean;
+}
+
+const { code, label, stretch = false } = Astro.props;
+
+// Determine language based on label
+const language = label === "Terminal" ? "bash" : "tsx";
+
+// Custom theme matching the oneDark from react-syntax-highlighter
+const customTheme = {
+  name: 'custom-one-dark',
+  type: 'dark',
+  colors: {
+    'editor.background': '#282c34',
+    'editor.foreground': '#abb2bf',
+  },
+  tokenColors: [
+    {
+      scope: ['comment', 'prolog', 'doctype', 'cdata'],
+      settings: {
+        foreground: '#6A9955',
+        fontStyle: 'italic'
+      }
+    },
+    {
+      scope: ['punctuation'],
+      settings: {
+        foreground: '#abb2bf'
+      }
+    },
+    {
+      scope: ['property', 'tag', 'boolean', 'number', 'constant', 'symbol', 'deleted'],
+      settings: {
+        foreground: '#d19a66'
+      }
+    },
+    {
+      scope: ['selector', 'attr-name', 'string', 'char', 'builtin', 'inserted'],
+      settings: {
+        foreground: '#98c379'
+      }
+    },
+    {
+      scope: ['entity', 'url', 'language-css .string', 'style .string'],
+      settings: {
+        foreground: '#56b6c2'
+      }
+    },
+    {
+      scope: ['atrule', 'attr-value', 'keyword'],
+      settings: {
+        foreground: '#c678dd'
+      }
+    },
+    {
+      scope: ['function', 'class-name'],
+      settings: {
+        foreground: '#62aeef'
+      }
+    },
+    {
+      scope: ['regex', 'important', 'variable'],
+      settings: {
+        foreground: '#e06c75'
+      }
+    },
+  ]
+};
+
+// Generate highlighted HTML
+const html = await codeToHtml(code, {
+  lang: language,
+  theme: 'one-dark-pro',
+});
+---
+
+<div
+  class:list={[
+    "rounded-2xl overflow-hidden border border-slate-800",
+    stretch && "h-full flex flex-col"
+  ]}
+  style="background: #282c34;"
+>
+  <!-- Title bar -->
+  <div class="flex items-center justify-between px-5 py-3 border-b border-white/5 flex-shrink-0">
+    <div class="flex items-center gap-1.5">
+      <span class="w-2.5 h-2.5 rounded-full bg-red-500/70"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-amber-500/70"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/70"></span>
+      <span class="ml-3 text-xs text-slate-500 font-medium">{label}</span>
+    </div>
+    <button
+      class="copy-button text-xs text-slate-400 hover:text-white transition-colors font-medium cursor-pointer px-2 py-1 rounded hover:bg-white/10"
+      data-code={code}
+    >
+      Copy
+    </button>
+  </div>
+
+  <!-- Code -->
+  <div
+    class:list={[
+      "shiki-container",
+      stretch && "flex-1 overflow-auto"
+    ]}
+    set:html={html}
+  />
+</div>
+
+<style>
+  .shiki-container :global(pre) {
+    margin: 0;
+    padding: 1.25rem;
+    background: transparent !important;
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+  
+  .shiki-container.flex-1 :global(pre) {
+    height: 100%;
+    overflow: auto;
+  }
+</style>
+
+<script>
+  // Copy button functionality
+  document.addEventListener('astro:page-load', () => {
+    const copyButtons = document.querySelectorAll('.copy-button');
+    
+    copyButtons.forEach((button) => {
+      button.addEventListener('click', async () => {
+        const code = button.getAttribute('data-code');
+        if (code) {
+          await navigator.clipboard.writeText(code);
+          const originalText = button.textContent;
+          button.textContent = '✓ Copied!';
+          setTimeout(() => {
+            button.textContent = originalText;
+          }, 2000);
+        }
+      });
+    });
+  });
+</script>
