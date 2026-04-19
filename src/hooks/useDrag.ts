@@ -1,16 +1,14 @@
 import { useCallback } from "react";
 import { useDndStore } from "../utils/dndStore";
-import mouseUpEventStore from "../utils/MouseUpEventStore";
 import type { DragItemData } from "../types";
 
 export interface UseDragOptions {
   id: string;
-  sortId?: string;
   type?: string;
   data?: DragItemData;
 }
 
-export function useDrag({ id, sortId = "", type = "default", data }: UseDragOptions) {
+export function useDrag({ id, type = "default", data }: UseDragOptions) {
   const startDrag = useDndStore((s) => s.startDrag);
   const endDrag = useDndStore((s) => s.endDrag);
 
@@ -21,7 +19,7 @@ export function useDrag({ id, sortId = "", type = "default", data }: UseDragOpti
 
       startDrag(
         id,
-        { type, data: { ...data, sortId } },
+        { type, data: { ...data } },
         event.currentTarget as HTMLElement,
         { x: event.clientX, y: event.clientY }
       );
@@ -40,8 +38,7 @@ export function useDrag({ id, sortId = "", type = "default", data }: UseDragOpti
       };
 
       const handlePointerUp = () => {
-        mouseUpEventStore.runEvents(sortId);
-        mouseUpEventStore.removeEvents(sortId);
+        useDndStore.getState().pendingSortHandler?.();
         endDrag();
         window.removeEventListener("pointerup", handlePointerUp);
         window.removeEventListener("pointermove", handlePointerMove);
@@ -50,7 +47,7 @@ export function useDrag({ id, sortId = "", type = "default", data }: UseDragOpti
       window.addEventListener("pointerup", handlePointerUp);
       window.addEventListener("pointermove", handlePointerMove);
     },
-    [id, type, data, sortId, startDrag, endDrag]
+    [id, type, data, startDrag, endDrag]
   );
 
   return { onPointerDown };

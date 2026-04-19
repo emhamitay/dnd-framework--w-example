@@ -6,7 +6,6 @@ import { SortableDropGroup } from "./SortableDropGroup";
 import { SortableDraggable } from "./SortableDraggable";
 import { SortableContext } from "../context/SortableContext";
 import { useDndStore } from "../utils/dndStore";
-import mouseUpEventStore from "../utils/MouseUpEventStore";
 import { useContext } from "react";
 
 type Item = { id: string; index: number };
@@ -19,7 +18,6 @@ const ITEMS: Item[] = [
 
 beforeEach(() => {
   useDndStore.setState({ activeItem: null, hoverId: null });
-  mouseUpEventStore.clearEvents();
 });
 
 describe("SortableDropGroup — rendering", () => {
@@ -82,17 +80,13 @@ describe("SortableDropGroup — sorting", () => {
   it("calls onSorted when a drag-drop reorders items", () => {
     const onSorted = vi.fn();
 
-    // Capture the sortId via a context consumer so we can trigger runEvents
-    let sortId = "";
-    function CaptureSortId() {
-      const ctx = useContext(SortableContext);
-      if (ctx) sortId = ctx.sortId;
-      return null;
-    }
-
     render(
       <SortableDropGroup items={ITEMS} onSorted={onSorted}>
-        <CaptureSortId />
+        {ITEMS.map((item) => (
+          <SortableDraggable key={item.id} id={item.id}>
+            <div>{item.id}</div>
+          </SortableDraggable>
+        ))}
       </SortableDropGroup>
     );
 
@@ -111,7 +105,7 @@ describe("SortableDropGroup — sorting", () => {
     });
 
     act(() => {
-      mouseUpEventStore.runEvents(sortId);
+      useDndStore.getState().pendingSortHandler?.();
     });
 
     expect(onSorted).toHaveBeenCalledOnce();

@@ -1,9 +1,9 @@
 import { useContext, useRef, type CSSProperties, type ReactNode } from "react";
 import { useDrag } from "../hooks/useDrag";
 import { useSortable, SORT_DIRECTION, LAYOUT_ANIMATION, type SortDirection } from "../hooks/useSortable";
+import { useSortableItemStyle } from "../hooks/useSortableItemStyle";
 import { SortableContext } from "../context/SortableContext";
 import { useDndStore } from "../utils/dndStore";
-import { computeGridShift } from "../utils/sortableGridUtils";
 import type { DndItem } from "../types";
 
 export interface SortableDraggableRenderProps {
@@ -41,10 +41,8 @@ export function SortableDraggable({
     throw new Error("SortableDraggable must be used inside a SortableDropGroup or have a sortId prop.");
   }
 
-  const draggedFromIndex = useDndStore((s) => s.draggedFromIndex);
-  const draggedSize = useDndStore((s) => s.draggedSize);
-  const draggedGap = useDndStore((s) => s.draggedGap);
   const setDraggedInfo = useDndStore((s) => s.setDraggedInfo);
+  const draggedFromIndex = useDndStore((s) => s.draggedFromIndex);
 
   const effectiveDirection = directionProp ?? context?.direction ?? SORT_DIRECTION.Vertical;
 
@@ -54,7 +52,7 @@ export function SortableDraggable({
     onHoverEnter,
     onHoverLeave,
   });
-  const { onPointerDown: rawPointerDown } = useDrag({ id, sortId });
+  const { onPointerDown: rawPointerDown } = useDrag({ id });
 
   const setRef = (node: HTMLElement | null) => {
     sortableRef.current = node;
@@ -82,42 +80,14 @@ export function SortableDraggable({
 
   const layoutAnimation = context?.layoutAnimation ?? LAYOUT_ANIMATION.Shift;
 
-  const computeItemStyle = (): CSSProperties => {
-    if (layoutAnimation === LAYOUT_ANIMATION.None) {
-      return { opacity: isActive ? 0.7 : 1 };
-    }
-    // layoutAnimation === "shift"
-    if (isActive) {
-      return { opacity: 0 };
-    }
-    if (
-      draggedFromIndex !== null &&
-      draggedSize !== null &&
-      context?.visualTo !== null &&
-      context?.visualTo !== undefined
-    ) {
-      const myIndex = context.items.findIndex((item) => item.id === id);
-      if (myIndex !== -1) {
-        const totalShift =
-          (effectiveDirection === SORT_DIRECTION.Horizontal ? draggedSize.width : draggedSize.height) + draggedGap;
-        const visualTo = context.visualTo;
-        const fromIndex = draggedFromIndex;
-        let shiftAmount = 0;
-        if (effectiveDirection === SORT_DIRECTION.Grid) {
-          shiftAmount = computeGridShift(myIndex, fromIndex, visualTo, totalShift);
-        } else if (visualTo > fromIndex && myIndex > fromIndex && myIndex <= visualTo) {
-          shiftAmount = -totalShift;
-        } else if (visualTo < fromIndex && myIndex >= visualTo && myIndex < fromIndex) {
-          shiftAmount = totalShift;
-        }
-        const axis = effectiveDirection === SORT_DIRECTION.Horizontal ? "X" : "Y";
-        return shiftAmount !== 0 ? { transform: `translate${axis}(${shiftAmount}px)` } : {};
-      }
-    }
-    return {};
-  };
-
-  const itemStyle = computeItemStyle();
+  const itemStyle = useSortableItemStyle({
+    id,
+    isActive: !!isActive,
+    visualTo: context?.visualTo ?? null,
+    items: context?.items ?? [],
+    direction: effectiveDirection,
+    layoutAnimation,
+  });
 
   const renderProps: SortableDraggableRenderProps = {
     ref: setRef,

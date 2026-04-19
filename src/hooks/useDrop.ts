@@ -12,7 +12,7 @@ export interface UseDropOptions {
 export function useDrop({ id, onDrop, onHoverEnter, onHoverLeave }: UseDropOptions): UseDropResult {
   const ref = useRef<HTMLElement | null>(null);
 
-  const { activeItem, hoverId, updateHover, endDrag } = useDndStore();
+  const { activeItem, hoverId, updateHover } = useDndStore();
   const isHover = hoverId === id;
 
   const handlePointerEnter = useCallback(() => {
@@ -33,12 +33,9 @@ export function useDrop({ id, onDrop, onHoverEnter, onHoverLeave }: UseDropOptio
     (event: PointerEvent) => {
       if (ref.current && ref.current.contains(event.target as Node) && activeItem?.id) {
         onDrop?.(activeItem);
-        endDrag();
-      } else if (activeItem?.id) {
-        endDrag();
       }
     },
-    [activeItem, onDrop, endDrag]
+    [activeItem, onDrop]
   );
 
   useEffect(() => {
@@ -49,20 +46,12 @@ export function useDrop({ id, onDrop, onHoverEnter, onHoverLeave }: UseDropOptio
     el.addEventListener("pointerleave", handlePointerLeave);
     el.addEventListener("pointerup", handleDrop);
 
-    const handleWindowPointerUp = (event: PointerEvent) => {
-      if (activeItem?.id && (!ref.current || !ref.current.contains(event.target as Node))) {
-        endDrag();
-      }
-    };
-    window.addEventListener("pointerup", handleWindowPointerUp);
-
     return () => {
       el.removeEventListener("pointerenter", handlePointerEnter);
       el.removeEventListener("pointerleave", handlePointerLeave);
       el.removeEventListener("pointerup", handleDrop);
-      window.removeEventListener("pointerup", handleWindowPointerUp);
     };
-  }, [handlePointerEnter, handlePointerLeave, handleDrop, activeItem?.id, endDrag]);
+  }, [handlePointerEnter, handlePointerLeave, handleDrop, activeItem?.id]);
 
   return { dropRef: ref, isHover };
 }

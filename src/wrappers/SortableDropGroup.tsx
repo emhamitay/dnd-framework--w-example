@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from "react";
+import { useMemo, useRef, type ReactNode } from "react";
 import { useSortableDrop, SORT_MODE, type SortModeValue } from "../hooks/useSortableDrop";
 import { SortableContext } from "../context/SortableContext";
 import { SORT_DIRECTION, LAYOUT_ANIMATION, type SortDirection, type LayoutAnimationValue } from "../hooks/useSortable";
@@ -29,7 +29,10 @@ export function SortableDropGroup<T extends SortableItem>({
   layoutAnimation = LAYOUT_ANIMATION.Shift,
   className,
 }: SortableDropGroupProps<T>) {
-  const sortId = useSortableDrop({ items, onSorted, indexKey, mode });
+  const sortIdRef = useRef('sortable-group-' + crypto.randomUUID());
+  const sortId = sortIdRef.current;
+  
+  useSortableDrop({ items, onSorted, indexKey, mode });
 
   const activeItem = useDndStore((s) => s.activeItem);
   const hoverId = useDndStore((s) => s.hoverId);
