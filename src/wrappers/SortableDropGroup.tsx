@@ -4,7 +4,7 @@ import { SortableContext } from "../context/SortableContext";
 import { SORT_DIRECTION, LAYOUT_ANIMATION, type SortDirection, type LayoutAnimationValue } from "../hooks/useSortable";
 import { useDndStore } from "../utils/dndStore";
 import { calculateNewIndex } from "../utils/sortableUtils";
-import type { SortPosition } from "../types";
+
 
 type SortableItem = { id: string; [key: string]: unknown };
 
@@ -36,12 +36,13 @@ export function SortableDropGroup<T extends SortableItem>({
 
   const activeItem = useDndStore((s) => s.activeItem);
   const hoverId = useDndStore((s) => s.hoverId);
+  const hoverSortPosition = useDndStore((s) => s.hoverSortPosition);
 
   const visualTo = useMemo(() => {
     if (!activeItem || hoverId === null) return null;
-    const position = (activeItem.data?.position as SortPosition) ?? "before";
+    const position = hoverSortPosition ?? "before";
     return calculateNewIndex(items, activeItem.id, hoverId, position);
-  }, [activeItem, hoverId, items]);
+  }, [activeItem, hoverId, hoverSortPosition, items]);
 
   const itemIds = useMemo(() => items.map((item) => ({ id: item.id })), [items]);
 

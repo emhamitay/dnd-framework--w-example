@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { useDndStore } from "../utils/dndStore";
 import type { DragItemData } from "../types";
 
@@ -12,6 +12,11 @@ export function useDrag({ id, type = "default", data }: UseDragOptions) {
   const startDrag = useDndStore((s) => s.startDrag);
   const endDrag = useDndStore((s) => s.endDrag);
 
+  // Keep a ref so the callback always reads the latest data without being
+  // re-created every time the (object) reference changes.
+  const dataRef = useRef(data);
+  dataRef.current = data;
+
   const onPointerDown = useCallback(
     (event: React.PointerEvent<Element>) => {
       if (event.defaultPrevented || event.button !== 0) return;
@@ -19,7 +24,7 @@ export function useDrag({ id, type = "default", data }: UseDragOptions) {
 
       startDrag(
         id,
-        { type, data: { ...data } },
+        { type, data: { ...dataRef.current } },
         event.currentTarget as HTMLElement,
         { x: event.clientX, y: event.clientY }
       );
@@ -47,7 +52,7 @@ export function useDrag({ id, type = "default", data }: UseDragOptions) {
       window.addEventListener("pointermove", handlePointerMove);
       window.addEventListener("selectstart", preventSelect);
     },
-    [id, type, data, startDrag, endDrag]
+    [id, type, startDrag, endDrag]
   );
 
   return { onPointerDown };

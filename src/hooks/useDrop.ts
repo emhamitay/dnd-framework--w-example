@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import { useDndStore } from "../utils/dndStore";
 import type { DndItem, UseDropResult } from "../types";
 
@@ -12,35 +12,46 @@ export interface UseDropOptions {
 export function useDrop({ id, onDrop, onHoverEnter, onHoverLeave }: UseDropOptions): UseDropResult {
   const ref = useRef<HTMLElement | null>(null);
 
-  const { activeItem, hoverId, updateHover } = useDndStore();
+  const { hoverId } = useDndStore();
   const isHover = hoverId === id;
 
-  const handlePointerEnter = useCallback(() => {
-    if (activeItem?.id) {
-      updateHover(id);
-      onHoverEnter?.(activeItem);
-    }
-  }, [activeItem, id, updateHover, onHoverEnter]);
-
-  const handlePointerLeave = useCallback(() => {
-    if (activeItem?.id) {
-      onHoverLeave?.(activeItem);
-    }
-    updateHover(null);
-  }, [activeItem, updateHover, onHoverLeave]);
-
-  const handleDrop = useCallback(
-    (event: PointerEvent) => {
-      if (ref.current && ref.current.contains(event.target as Node) && activeItem?.id) {
-        onDrop?.(activeItem);
-      }
-    },
-    [activeItem, onDrop]
-  );
+  // Keep callback refs fresh each render so event handlers always call the
+  // latest versions without being re-created (and re-registered) themselves.
+  const idRef = useRef(id);
+  idRef.current = id;
+  const onDropRef = useRef(onDrop);
+  onDropRef.current = onDrop;
+  const onHoverEnterRef = useRef(onHoverEnter);
+  onHoverEnterRef.current = onHoverEnter;
+  const onHoverLeaveRef = useRef(onHoverLeave);
+  onHoverLeaveRef.current = onHoverLeave;
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
+    const handlePointerEnter = () => {
+      const activeItem = useDndStore.getState().activeItem;
+      if (activeItem?.id) {
+        useDndStore.getState().updateHover(idRef.current);
+        onHoverEnterRef.current?.(activeItem);
+      }
+    };
+
+    const handlePointerLeave = () => {
+      const activeItem = useDndStore.getState().activeItem;
+      if (activeItem?.id) {
+        onHoverLeaveRef.current?.(activeItem);
+      }
+      useDndStore.getState().updateHover(null);
+    };
+
+    const handleDrop = (event: PointerEvent) => {
+      const activeItem = useDndStore.getState().activeItem;
+      if (ref.current && ref.current.contains(event.target as Node) && activeItem?.id) {
+        onDropRef.current?.(activeItem);
+      }
+    };
 
     el.addEventListener("pointerenter", handlePointerEnter);
     el.addEventListener("pointerleave", handlePointerLeave);
@@ -51,7 +62,7 @@ export function useDrop({ id, onDrop, onHoverEnter, onHoverLeave }: UseDropOptio
       el.removeEventListener("pointerleave", handlePointerLeave);
       el.removeEventListener("pointerup", handleDrop);
     };
-  }, [handlePointerEnter, handlePointerLeave, handleDrop, activeItem?.id]);
+  }, []); // stable handlers — registers once on mount
 
   return { dropRef: ref, isHover };
 }
