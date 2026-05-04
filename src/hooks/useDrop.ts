@@ -1,3 +1,4 @@
+'use client';
 // Hook that registers pointer-event listeners on a DOM element to make it a drop target.
 import { useEffect, useRef, useState } from "react";
 import { useDndStore } from "../utils/dndStore";

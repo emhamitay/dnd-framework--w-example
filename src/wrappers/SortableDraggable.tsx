@@ -1,3 +1,4 @@
+'use client';
 // Sortable drag item that combines drag, hover detection, and shift-animation styles, reading group config from SortableContext.
 import { useContext, useRef, type CSSProperties, type ReactNode } from "react";
 import { useDrag } from "../hooks/useDrag";

@@ -1,3 +1,4 @@
+'use client';
 // Container that owns a sort group's shared context and computes visualTo for shift-animation previews.
 import { useMemo, useRef, type ReactNode } from "react";
 import { useSortableDrop, SORT_MODE, type SortModeValue } from "../hooks/useSortableDrop";

@@ -1,3 +1,4 @@
+'use client';
 // Global Zustand store that holds all drag-and-drop runtime state and actions.
 import { create } from "zustand";
 import type { ActiveItem } from "../types";

@@ -1,3 +1,4 @@
+'use client';
 // Renders a fixed-position DOM clone of the dragged element, following the pointer, via a portal.
 import { useEffect, useLayoutEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";

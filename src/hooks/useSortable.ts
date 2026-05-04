@@ -1,3 +1,4 @@
+'use client';
 // Hook that continuously polls pointer position via rAF to determine which side (before/after) of a sortable item the pointer is on.
 import { useEffect, useRef, useState } from "react";
 import { useDndStore } from "../utils/dndStore";
