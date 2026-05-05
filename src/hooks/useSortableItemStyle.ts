@@ -1,3 +1,4 @@
+'use client';
 // Returns the CSS transform/opacity style for a sortable item to visually preview where the dragged item will land.
 import type { CSSProperties } from "react";
 import { SORT_DIRECTION, LAYOUT_ANIMATION, type SortDirection, type LayoutAnimationValue } from "./useSortable";

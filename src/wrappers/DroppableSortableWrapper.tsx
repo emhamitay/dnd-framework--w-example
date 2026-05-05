@@ -1,3 +1,4 @@
+'use client';
 // Convenience wrapper that composes Droppable and SortableDropGroup into a zone that accepts both foreign drops and internal reorders.
 import React, { type ReactNode } from "react";
 import { Droppable } from "./Droppable";

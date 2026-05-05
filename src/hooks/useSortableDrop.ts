@@ -1,3 +1,4 @@
+'use client';
 // Hook that registers a pending sort handler so the reorder fires atomically at the moment of pointer-up.
 import { useEffect } from "react";
 import { useDndStore } from "../utils/dndStore";

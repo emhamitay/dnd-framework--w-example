@@ -1,3 +1,4 @@
+'use client';
 // Wrapper component that injects the global no-select style rule and wires the Escape-key drag-cancel handler.
 import { useEffect, type ReactNode } from "react";
 import { useDndStore } from "../utils/dndStore";

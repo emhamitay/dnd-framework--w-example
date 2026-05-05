@@ -1,3 +1,4 @@
+'use client';
 // Hook that wires pointer events on an element to start/stop dragging and update the global DnD store.
 import { useCallback, useRef } from "react";
 import { useDndStore } from "../utils/dndStore";

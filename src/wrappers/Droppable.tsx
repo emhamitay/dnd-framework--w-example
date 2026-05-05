@@ -1,3 +1,4 @@
+'use client';
 // Component that makes a drop target, supporting either a render-prop child (for custom DOM) or a plain div fallback.
 import React, { type ReactNode, type RefObject } from "react";
 import { useDrop } from "../hooks/useDrop";

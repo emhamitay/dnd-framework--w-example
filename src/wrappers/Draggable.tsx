@@ -1,3 +1,4 @@
+'use client';
 // Component that injects drag behavior into its single child element without adding a wrapper DOM node.
 import React from "react";
 import { useDrag } from "../hooks/useDrag";
